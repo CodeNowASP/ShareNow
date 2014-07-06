@@ -1,6 +1,8 @@
-package de.tum.asp.sharenow;
+package de.tum.asp.sharenow.app;
 
 import java.util.Locale;
+
+import de.tum.asp.sharenow.R;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;

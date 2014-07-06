@@ -4,4 +4,4 @@
     android:background="@drawable/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.tum.asp.sharenow.MainActivity" />
+    tools:context="de.tum.asp.sharenow.app.MainActivity" />

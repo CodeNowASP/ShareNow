@@ -1,5 +1,6 @@
-package de.tum.asp.sharenow;
+package de.tum.asp.sharenow.app;
 
+import de.tum.asp.sharenow.R;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
