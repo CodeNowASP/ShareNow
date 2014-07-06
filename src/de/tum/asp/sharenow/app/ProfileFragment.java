@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Dieses Fragment bietet entweder eine Möglichkeit zum Login oder stellt das
+ * Profil eines eingeloggten Nutzers dar.
+ */
 public class ProfileFragment extends Fragment {
 
 	@Override
@@ -16,5 +20,4 @@ public class ProfileFragment extends Fragment {
 				false);
 		return rootView;
 	}
-
 }

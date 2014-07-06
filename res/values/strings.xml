@@ -1,9 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Allgemeine Informationen -->
     <string name="app_name">ShareNow</string>
     <string name="title_section1">Search</string>
     <string name="title_section2">Rent Out</string>
     <string name="title_section3">Profile</string>
+    <string name="title_register_activity">Register</string>
+
+    <!-- Login Menü in der Action Bar -->
+    <string name="actionbar_menu_title">Login</string>
+    <string name="actionbar_menu_greeting">Hello</string>
+    <string name="actionbar_menu_profile">Profile</string>
+    <string name="actionbar_menu_logout">Logout</string>
+
+    <!-- Login Fragment -->
+    <string name="profile_login_title">Login</string>
+    <string name="profile_login_mail">E-Mail</string>
+    <string name="profile_login_password">Password</string>
+    <string name="profile_login_button">Login</string>
+    <string name="profile_login_popup_text">Invalid mail or password.</string>
+    <string name="profile_login_popup_ok">OK</string>
+    <string name="profile_register_button">Register</string>
+
+    <!-- Register Aktivität -->
+    <string name="register_title">Register</string>
+    <string name="register_mail">E-Mail</string>
+    <string name="register_password">Password</string>
+    <string name="register_firstName">First Name</string>
+    <string name="register_lastName">Last Name</string>
+    <string name="register_register_button">Register</string>
 
 </resources>

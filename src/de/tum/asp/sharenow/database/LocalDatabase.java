@@ -393,6 +393,59 @@ public class LocalDatabase {
 	}
 
 	/**
+	 * Den Datensatz eines Nutzers aus der Datenbank auslesen.
+	 * 
+	 * @param mail
+	 *            Die E-Mail Adresse des Nutzers.
+	 * @return Die Daten des Nutzers. Null, falls der Nutzer nicht gefunden
+	 *         wurde.
+	 */
+	public User getUser(String mail) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+		// festlegen welche Spalten zurückgegeben werden
+		String[] projection = { DatabaseContract.Users.ID,
+				DatabaseContract.Users.COLUMN_NAME_MAIL,
+				DatabaseContract.Users.COLUMN_NAME_HASHED_PASSWORD,
+				DatabaseContract.Users.COLUMN_NAME_USER_IMAGE,
+				DatabaseContract.Users.COLUMN_NAME_FIRSTNAME,
+				DatabaseContract.Users.COLUMN_NAME_LASTNAME,
+				DatabaseContract.Users.COLUMN_NAME_ACCOUNT_BALANCE };
+
+		// Nutzer abfragen
+		Cursor cursor = db.query(DatabaseContract.Users.TABLE_NAME, projection,
+				DatabaseContract.Users.COLUMN_NAME_MAIL + "=?",
+				new String[] { mail }, null, null, null);
+		cursor.moveToFirst();
+		User user = null;
+		if (cursor.getCount() > 0) {
+			// User gefunden, neues User-Objekt erstellen & mit Daten füllen
+			user = new User();
+			user.setId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.ID)));
+			user.setMail(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_MAIL)));
+			user.setHashedPassword(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_HASHED_PASSWORD)));
+			user.setUserImage(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_USER_IMAGE)));
+			user.setFirstName(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_FIRSTNAME)));
+			user.setLastName(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_LASTNAME)));
+			user.setAccountBalance(cursor.getDouble(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_ACCOUNT_BALANCE)));
+		}
+
+		// Referenz auf Datenbank schließen
+		dbHelper.close();
+
+		// User-Objekt zurückgeben
+		return user;
+	}
+
+	/**
 	 * Den Datensatz eines Parkplatzes aus der Datenbank löschen.
 	 * 
 	 * @param id

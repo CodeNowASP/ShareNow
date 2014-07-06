@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * In diesem Fragment kann ein Nutzer nach Parkplätzen suchen.
+ */
 public class SearchFragment extends Fragment {
 
 	@Override
