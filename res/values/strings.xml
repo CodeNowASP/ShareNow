@@ -30,5 +30,7 @@
     <string name="register_firstName">First Name</string>
     <string name="register_lastName">Last Name</string>
     <string name="register_register_button">Register</string>
+    <string name="register_popup_text">E-Mail address already in use.</string>
+    <string name="register_popup_ok">Ok</string>
 
 </resources>
