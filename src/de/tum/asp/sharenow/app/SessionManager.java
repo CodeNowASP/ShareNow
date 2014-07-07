@@ -21,6 +21,17 @@ public class SessionManager {
 
 	private SharedPreferences pref;
 	private Context context;
+	
+	/**
+	 * Konstruktor.
+	 * 
+	 * @param context
+	 *            Der Kontext der aufrufenden Anwendung.
+	 */
+	public SessionManager(Context context) {
+		this.context = context;
+		pref = context.getSharedPreferences("SessionPreferences", 0);
+	}
 
 	/**
 	 * Einloggen.
@@ -105,17 +116,6 @@ public class SessionManager {
 			e.printStackTrace();
 		}
 		return result;
-	}
-
-	/**
-	 * Konstruktor.
-	 * 
-	 * @param context
-	 *            Der Kontext der aufrufenden Anwendung.
-	 */
-	public SessionManager(Context context) {
-		this.context = context;
-		pref = context.getSharedPreferences("SessionPreferences", 0);
 	}
 
 }

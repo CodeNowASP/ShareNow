@@ -87,6 +87,7 @@ public class MainActivity extends ActionBarActivity implements
 		case R.id.actionbar_menu_title:
 			// Menü wurde angeklickt
 			if (!sessionManager.loggedIn()) {
+				mViewPager.setAdapter(mSectionsPagerAdapter);
 				mViewPager.setCurrentItem(2);
 			}
 			return true;
@@ -95,6 +96,7 @@ public class MainActivity extends ActionBarActivity implements
 			if (sessionManager.loggedIn()) {
 				sessionManager.logout();
 				invalidateOptionsMenu();
+				mViewPager.setAdapter(mSectionsPagerAdapter);
 				mViewPager.setCurrentItem(2);
 			}
 			return true;
@@ -143,7 +145,8 @@ public class MainActivity extends ActionBarActivity implements
 				.toString())) {
 			// Login erfolgreich
 			invalidateOptionsMenu();
-			mViewPager.setCurrentItem(0);
+			mViewPager.setAdapter(mSectionsPagerAdapter);
+			mViewPager.setCurrentItem(2);
 		} else {
 			// Login nicht erfolgreich, Meldung ausgeben
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);

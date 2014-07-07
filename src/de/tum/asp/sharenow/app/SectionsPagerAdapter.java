@@ -8,14 +8,15 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
- * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
- * one of the sections/tabs/pages.
+ * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one
+ * of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
-	
-	private Context context;	
+public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+
+	private Context context;
 
 	public SectionsPagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
@@ -30,7 +31,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		case 1:
 			return new RentOutFragment();
 		default:
-			return new ProfileFragment();
+			SessionManager sessionManager = new SessionManager(context);
+			if (!sessionManager.loggedIn()) {
+				return new LoginFragment();
+			} else {
+				return new ProfileFragment();
+			}
 		}
 	}
 

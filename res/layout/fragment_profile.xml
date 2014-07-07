@@ -12,51 +12,6 @@
         android:id="@+id/profile_login_mail_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/profile_login_mail" />
-
-    <EditText
-        android:id="@+id/profile_login_mail_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_login_mail_text"
-        android:layout_centerHorizontal="true"
-        android:text="jd@example.com"
-        android:inputType="textEmailAddress" />
-
-    <TextView
-        android:id="@+id/profile_login_password_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_login_mail_input"
-        android:text="@string/profile_login_password" />
-
-    <EditText
-        android:id="@+id/profile_login_password_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_login_password_text"
-        android:layout_centerHorizontal="true"
-        android:text="hallo"
-        android:inputType="textPassword" />
-
-    <Button
-        android:id="@+id/profile_login_button"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_login_password_input"
-        android:layout_centerHorizontal="true"
-        android:onClick="login"
-        android:text="@string/profile_login_button" />
-
-    <Button
-        android:id="@+id/profile_register_button"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_login_button"
-        android:layout_centerHorizontal="true"
-        android:onClick="register"
-        android:text="@string/profile_register_button" />
+        android:text="PROFILE" />
 
 </RelativeLayout>
