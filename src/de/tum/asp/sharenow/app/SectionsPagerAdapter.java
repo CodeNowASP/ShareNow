@@ -17,32 +17,48 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
 	private Context context;
+	private SearchFragment searchFragment;
+	private RentOutFragment rentOutFragment;
+	private LoginFragment loginFragment;
+	private ProfileFragment profileFragment;
 
+	/**
+	 * Konstruktur.
+	 * 
+	 * @param fm
+	 *            FragmentManager zur Verwaltung der Fragmente.
+	 * @param context
+	 *            Kontext der Anwendung.
+	 */
 	public SectionsPagerAdapter(FragmentManager fm, Context context) {
 		super(fm);
 		this.context = context;
+		this.searchFragment = new SearchFragment();
+		this.rentOutFragment = new RentOutFragment();
+		this.loginFragment = new LoginFragment();
+		this.profileFragment = new ProfileFragment();
 	}
 
 	@Override
 	public Fragment getItem(int position) {
 		switch (position) {
 		case 0:
-			return new SearchFragment();
+			return searchFragment;
 		case 1:
-			return new RentOutFragment();
+			return rentOutFragment;
 		default:
+			// abhängig von Login-Status unterschiedliches Fragment zurückgeben
 			SessionManager sessionManager = new SessionManager(context);
 			if (!sessionManager.loggedIn()) {
-				return new LoginFragment();
+				return loginFragment;
 			} else {
-				return new ProfileFragment();
+				return profileFragment;
 			}
 		}
 	}
 
 	@Override
 	public int getCount() {
-		// Show 3 total pages.
 		return 3;
 	}
 

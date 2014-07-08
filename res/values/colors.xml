@@ -2,6 +2,7 @@
 <resources>
 
     <color name="transparent">#00000000 </color>
-    <color name="actionBarBackground">#11FFFFFF </color>
+    <color name="actionBarBackground">#30FFFFFF </color>
+    <color name="actionBarText">#FFFFFFFF </color>
 
 </resources>

@@ -30,7 +30,7 @@ public final class DatabaseContract {
 		public static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 				+ TABLE_NAME + " (" + ID + " INTEGER PRIMARY KEY, "
 				+ COLUMN_NAME_MAIL + " TEXT, " + COLUMN_NAME_HASHED_PASSWORD
-				+ " TEXT, " + COLUMN_NAME_USER_IMAGE + " TEXT, "
+				+ " TEXT, " + COLUMN_NAME_USER_IMAGE + " BLOB, "
 				+ COLUMN_NAME_FIRSTNAME + " TEXT, " + COLUMN_NAME_LASTNAME
 				+ " TEXT, " + COLUMN_NAME_ACCOUNT_BALANCE + " DOUBLE" + ")";
 
@@ -51,6 +51,7 @@ public final class DatabaseContract {
 		public static final String COLUMN_NAME_USER_ID = "userId";
 		public static final String COLUMN_NAME_DESCRIPTION = "description";
 		public static final String COLUMN_NAME_ADDRESS = "address";
+		public static final String COLUMN_NAME_IMAGE = "image";
 		public static final String COLUMN_NAME_LOCATION_LAT = "locationLat";
 		public static final String COLUMN_NAME_LOCATION_LONG = "locationLong";
 		public static final String COLUMN_NAME_PRICE_PER_HOUR = "pricePerHour";
@@ -64,8 +65,8 @@ public final class DatabaseContract {
 				+ TABLE_NAME + " (" + ID + " INTEGER PRIMARY KEY, "
 				+ COLUMN_NAME_USER_ID + " INTEGER, " + COLUMN_NAME_DESCRIPTION
 				+ " TEXT, " + COLUMN_NAME_ADDRESS + " TEXT, "
-				+ COLUMN_NAME_LOCATION_LAT + " DOUBLE, "
-				+ COLUMN_NAME_LOCATION_LONG + " DOUBLE, "
+				+ COLUMN_NAME_IMAGE + " BLOB, " + COLUMN_NAME_LOCATION_LAT
+				+ " DOUBLE, " + COLUMN_NAME_LOCATION_LONG + " DOUBLE, "
 				+ COLUMN_NAME_PRICE_PER_HOUR + " DOUBLE, "
 				+ COLUMN_NAME_NUMBER_OF_BOOKINGS + " INTEGER, "
 				+ COLUMN_NAME_RATING + " DOUBLE" + ")";

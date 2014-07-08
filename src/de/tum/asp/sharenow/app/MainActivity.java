@@ -1,18 +1,28 @@
 package de.tum.asp.sharenow.app;
 
 import de.tum.asp.sharenow.R;
+import de.tum.asp.sharenow.dialogs.DatePickerFragment;
+import de.tum.asp.sharenow.dialogs.TimePickerFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 /**
  * Hauptseite. Alle anderen Seiten werden durch diese als Fragmente aufgerufen.
@@ -125,7 +135,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Zur Register Aktivität wechseln.
 	 * 
 	 * @param view
-	 *            View, von der aus gewechselt werden soll.
+	 *            Element, von dem aus die Methode aufgerufen wird.
 	 */
 	public void register(View view) {
 		Intent intent = new Intent(this, RegisterActivity.class);
@@ -136,7 +146,7 @@ public class MainActivity extends ActionBarActivity implements
 	 * Login basierend auf E-Mail und Passwort durchführen.
 	 * 
 	 * @param view
-	 *            View, von der aus die Methode aufgerufen wird.
+	 *            Element, von dem aus die Methode aufgerufen wird.
 	 */
 	public void login(View view) {
 		EditText mail = (EditText) findViewById(R.id.profile_login_mail_input);
@@ -159,5 +169,84 @@ public class MainActivity extends ActionBarActivity implements
 			AlertDialog dialog = builder.create();
 			dialog.show();
 		}
+	}
+
+	/**
+	 * Bild aus der Galerie auswählen.
+	 * 
+	 * @param view
+	 *            Element, von dem aus die Methode aufgerufen wird.
+	 */
+	public void selectImage(View view) {
+		Intent i = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		startActivityForResult(i, 0);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// http://viralpatel.net/blogs/pick-image-from-galary-android-app/
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == 0 && resultCode == Activity.RESULT_OK
+				&& data != null) {
+			Uri selectedImage = data.getData();
+			String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+			Cursor cursor = getContentResolver().query(selectedImage,
+					filePathColumn, null, null, null);
+			Log.d("DEBUG", "" + "cursor: " + (cursor == null));
+			cursor.moveToFirst();
+
+			int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+			String picturePath = cursor.getString(columnIndex);
+			cursor.close();
+
+			ImageView imageView = (ImageView) findViewById(R.id.rentout_image);
+			imageView.setImageURI(Uri.parse(picturePath));
+		}
+	}
+
+	/**
+	 * Bild auf Standard zurücksetzen.
+	 * 
+	 * @param view
+	 *            Element, von dem aus die Methode aufgerufen wird.
+	 */
+	public void resetImage(View view) {
+		ImageView imageView = (ImageView) findViewById(R.id.rentout_image);
+		imageView.setImageResource(R.drawable.no_picture);
+	}
+
+	/**
+	 * Zeit auswählen.
+	 * 
+	 * @param view
+	 *            Element, von dem aus die Methode aufgerufen wird.
+	 */
+	public void pickTime(View view) {
+		DialogFragment newFragment = new TimePickerFragment((TextView) view);
+		newFragment.show(getFragmentManager(), "timePicker");
+	}
+
+	/**
+	 * Datum auswählen
+	 * 
+	 * @param view
+	 *            Element, von dem aus die Methode aufgerufen wird.
+	 */
+	public void pickDate(View view) {
+		DialogFragment newFragment = new DatePickerFragment((TextView) view);
+		newFragment.show(getFragmentManager(), "datePicker");
+	}
+
+	/**
+	 * Parkplatz vermieten.
+	 * 
+	 * @param view
+	 *            Element, von dem aus die Methode aufgerufen wird.
+	 */
+	public void rentOut(View view) {
+		// TODO
 	}
 }

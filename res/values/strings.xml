@@ -31,6 +31,24 @@
     <string name="register_lastName">Last Name</string>
     <string name="register_register_button">Register</string>
     <string name="register_popup_text">E-Mail address already in use.</string>
-    <string name="register_popup_ok">Ok</string>
+    <string name="register_popup_ok">OK</string>
+
+    <!-- RentOut Fragment -->
+    <string name="rentout_text">Please enter the details of your parking spot.</string>
+    <string name="rentout_address">Address</string>
+    <string name="rentout_description">Description</string>
+    <string name="rentout_price">Price Per Hour in €</string>
+    <string name="rentout_slot_title">Availability</string>
+    <string name="rentout_slot_begin">From</string>
+    <string name="rentout_slot_end">Until</string>
+    <string name="rentout_slot_once">Once</string>
+    <string name="rentout_slot_weekly">Weekly</string>
+    <string name="rentout_slot_time">Time</string>
+    <string name="rentout_slot_date">Date</string>
+    <string name="rentout_image_title">Image</string>
+    <string name="rentout_image_change">Change</string>
+    <string name="rentout_image_reset">Reset</string>
+    <string name="rentout_image_content_description">Image of the parking spot.</string>
+    <string name="rentout_button">Rent Out</string>
 
 </resources>

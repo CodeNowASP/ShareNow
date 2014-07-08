@@ -9,6 +9,7 @@ public class Place {
 	private long userId;
 	private String description;
 	private String address;
+	private byte[] image;
 	private double locationLat;
 	private double locationLong;
 	private double pricePerHour;
@@ -35,6 +36,8 @@ public class Place {
 	 *            Die Beschreibung des Parkplatzes.
 	 * @param address
 	 *            Die Adresse des Parkplatzes.
+	 * @param image
+	 *            Ein Bild des Parkplatzes als Binärdaten.
 	 * @param locationLat
 	 *            Der Breitengrad des Parkplatzes.
 	 * @param locationLong
@@ -47,13 +50,14 @@ public class Place {
 	 *            Die Bewertung des Parkplatzes.
 	 */
 	public Place(long id, long userId, String description, String address,
-			double locationLat, double locationLong, double pricePerHour,
-			int numberOfBookings, double rating) {
+			byte[] image, double locationLat, double locationLong,
+			double pricePerHour, int numberOfBookings, double rating) {
 		super();
 		this.id = id;
 		this.userId = userId;
 		this.description = description;
 		this.address = address;
+		this.image = image;
 		this.locationLat = locationLat;
 		this.locationLong = locationLong;
 		this.pricePerHour = pricePerHour;
@@ -72,6 +76,8 @@ public class Place {
 	 *            Die Beschreibung des Parkplatzes.
 	 * @param address
 	 *            Die Adresse des Parkplatzes.
+	 * @param image
+	 *            Ein Bild des Parkplatzes als Binärdaten.
 	 * @param locationLat
 	 *            Der Breitengrad des Parkplatzes.
 	 * @param locationLong
@@ -83,7 +89,7 @@ public class Place {
 	 * @param rating
 	 *            Die Bewertung des Parkplatzes.
 	 */
-	public Place(long userId, String description, String address,
+	public Place(long userId, String description, String address, byte[] image,
 			double locationLat, double locationLong, double pricePerHour,
 			int numberOfBookings, double rating) {
 		super();
@@ -156,6 +162,21 @@ public class Place {
 	 */
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	/**
+	 * @return Ein Bild des Parkplatzes als Binärdaten.
+	 */
+	public byte[] getImage() {
+		return this.image;
+	}
+
+	/**
+	 * @param image
+	 *            Ein neues Bild des Parkplatzes als Binärdaten.
+	 */
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 
 	/**

@@ -246,6 +246,7 @@ public class LocalDatabase {
 		String[] projection = { DatabaseContract.Places.COLUMN_NAME_USER_ID,
 				DatabaseContract.Places.COLUMN_NAME_DESCRIPTION,
 				DatabaseContract.Places.COLUMN_NAME_ADDRESS,
+				DatabaseContract.Places.COLUMN_NAME_IMAGE,
 				DatabaseContract.Places.COLUMN_NAME_LOCATION_LAT,
 				DatabaseContract.Places.COLUMN_NAME_LOCATION_LONG,
 				DatabaseContract.Places.COLUMN_NAME_PRICE_PER_HOUR,
@@ -269,6 +270,8 @@ public class LocalDatabase {
 					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_DESCRIPTION)));
 			place.setAddress(cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_ADDRESS)));
+			place.setImage(cursor.getBlob(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_IMAGE)));
 			place.setLocationLat(cursor.getDouble(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_LOCATION_LAT)));
 			place.setLocationLong(cursor.getDouble(cursor
@@ -375,7 +378,7 @@ public class LocalDatabase {
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_MAIL)));
 			user.setHashedPassword(cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_HASHED_PASSWORD)));
-			user.setUserImage(cursor.getString(cursor
+			user.setUserImage(cursor.getBlob(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_USER_IMAGE)));
 			user.setFirstName(cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_FIRSTNAME)));
@@ -428,7 +431,7 @@ public class LocalDatabase {
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_MAIL)));
 			user.setHashedPassword(cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_HASHED_PASSWORD)));
-			user.setUserImage(cursor.getString(cursor
+			user.setUserImage(cursor.getBlob(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_USER_IMAGE)));
 			user.setFirstName(cursor.getString(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Users.COLUMN_NAME_FIRSTNAME)));

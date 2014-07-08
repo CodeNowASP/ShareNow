@@ -8,7 +8,7 @@ public class User {
 	private long id;
 	private String mail;
 	private String hashedPassword;
-	private String userImage;
+	private byte[] userImage;
 	private String firstName;
 	private String lastName;
 	private double accountBalance;
@@ -31,7 +31,7 @@ public class User {
 	 * @param hashedPassword
 	 *            Das gehashte Passwort des Nutzers.
 	 * @param userImage
-	 *            Eine URI zum Profilbild des Nutzers.
+	 *            Das Profilbild des Nutzers als Binärdaten.
 	 * @param firstName
 	 *            Der Vorname des Nutzers.
 	 * @param lastName
@@ -39,7 +39,7 @@ public class User {
 	 * @param accountBalance
 	 *            Das Guthaben des Nutzers.
 	 */
-	public User(long id, String mail, String hashedPassword, String userImage,
+	public User(long id, String mail, String hashedPassword, byte[] userImage,
 			String firstName, String lastName, double accountBalance) {
 		super();
 		this.id = id;
@@ -68,7 +68,7 @@ public class User {
 	 * @param accountBalance
 	 *            Das Guthaben des Nutzers.
 	 */
-	public User(String mail, String hashedPassword, String userImage,
+	public User(String mail, String hashedPassword, byte[] userImage,
 			String firstName, String lastName, double accountBalance) {
 		super();
 		this.id = -1;
@@ -127,17 +127,17 @@ public class User {
 	}
 
 	/**
-	 * @return Die URI zum Profilbild des Nutzers.
+	 * @return Das Profilbild des Nutzers als Binärdaten.
 	 */
-	public String getUserImage() {
+	public byte[] getUserImage() {
 		return userImage;
 	}
 
 	/**
 	 * @param userImage
-	 *            Die neue URI zum Profilbild des Nutzers.
+	 *            Das neue Profilbild des Nutzers als Binärdaten.
 	 */
-	public void setUserImage(String userImage) {
+	public void setUserImage(byte[] userImage) {
 		this.userImage = userImage;
 	}
 
