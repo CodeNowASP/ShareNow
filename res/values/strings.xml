@@ -50,5 +50,7 @@
     <string name="rentout_image_reset">Reset</string>
     <string name="rentout_image_content_description">Image of the parking spot.</string>
     <string name="rentout_button">Rent Out</string>
+    <string name="rentout_popup_text">Please login first.</string>
+    <string name="rentout_popup_ok">OK</string>
 
 </resources>

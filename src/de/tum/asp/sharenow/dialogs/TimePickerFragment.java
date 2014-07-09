@@ -1,12 +1,13 @@
 package de.tum.asp.sharenow.dialogs;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -34,18 +35,19 @@ public class TimePickerFragment extends DialogFragment implements
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Standard Werte
-		final Calendar c = Calendar.getInstance();
+		final Calendar c = Calendar.getInstance(TimeZone
+				.getTimeZone("Europe/Berlin"));
 		int hour = c.get(Calendar.HOUR_OF_DAY);
 		int minute = c.get(Calendar.MINUTE);
 
 		// neue Instanz zurückgeben
-		return new TimePickerDialog(getActivity(), this, hour, minute,
-				DateFormat.is24HourFormat(getActivity()));
+		return new TimePickerDialog(getActivity(), this, hour, minute, true);
 	}
 
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		// Zeit wurde gewählt, Text anpassen
-		textView.setText(hourOfDay + ":" + minute);
+		DecimalFormat df = new DecimalFormat("00");
+		textView.setText(df.format(hourOfDay) + ":" + df.format(minute));
 	}
 }

@@ -12,6 +12,7 @@ public class Slot {
 	private Timestamp dateStart;
 	private Timestamp dateEnd;
 	private boolean reserved;
+	private boolean weekly;
 
 	/**
 	 * Standard-Konstruktor. Erstellt ein neues Slot Objekt, das anschließend
@@ -35,15 +36,18 @@ public class Slot {
 	 *            Das End-Datum des Slots.
 	 * @param reserved
 	 *            Wahr, wenn der Slot belegt ist.
+	 * @param weekly
+	 *            Wahr, wenn der Slot wöchentlich wiederholt werden soll.
 	 */
 	public Slot(long id, long placeId, Timestamp dateStart, Timestamp dateEnd,
-			boolean reserved) {
+			boolean reserved, boolean weekly) {
 		super();
 		this.id = id;
 		this.placeId = placeId;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
 		this.reserved = reserved;
+		this.weekly = weekly;
 	}
 
 	/**
@@ -59,14 +63,17 @@ public class Slot {
 	 *            Das End-Datum des Slots.
 	 * @param reserved
 	 *            Wahr, wenn der Slot belegt ist.
+	 * @param weekly
+	 *            Wahr, wenn der Slot wöchentlich wiederholt werden soll.
 	 */
 	public Slot(long placeId, Timestamp dateStart, Timestamp dateEnd,
-			boolean reserved) {
+			boolean reserved, boolean weekly) {
 		super();
 		this.placeId = placeId;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
 		this.reserved = reserved;
+		this.weekly = weekly;
 	}
 
 	/**
@@ -146,6 +153,21 @@ public class Slot {
 		this.reserved = reserved;
 	}
 
+	/**
+	 * @return Wahr wenn der Zeitslot wöchentlich ist.
+	 */
+	public boolean isWeekly() {
+		return weekly;
+	}
+
+	/**
+	 * @param weekly
+	 *            Wahr wenn der Zeitslot wöchentlich ist.
+	 */
+	public void setWeekly(boolean weekly) {
+		this.weekly = weekly;
+	}
+
 	@Override
 	public String toString() {
 		String s = "Slot(";
@@ -153,7 +175,8 @@ public class Slot {
 		s += "placeId:" + placeId + " ";
 		s += "dateStart:" + dateStart + " ";
 		s += "dateEnd:" + dateEnd + ", ";
-		s += "reserved:" + reserved;
+		s += "reserved:" + reserved + ", ";
+		s += "weekly:" + weekly;
 		s += ")";
 		return s;
 	}

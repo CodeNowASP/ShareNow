@@ -1,7 +1,9 @@
 package de.tum.asp.sharenow.app;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import de.tum.asp.sharenow.R;
 import android.os.Bundle;
@@ -31,7 +33,8 @@ public class RentOutFragment extends Fragment {
 
 	// Zeit und Datum auf aktuelles Datum setzen und Größe anpassen
 	private void setDateAndTime(View view) {
-		Calendar calendar = new GregorianCalendar();
+		final Calendar calendar = Calendar.getInstance(TimeZone
+				.getTimeZone("Europe/Berlin"));
 
 		// Textgröße der Eingabefelder holen
 		EditText editText = (EditText) view
@@ -42,30 +45,33 @@ public class RentOutFragment extends Fragment {
 		float sp = px / scaledDensity;
 
 		// aktuelles Datum als Start setzen
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy",
+				Locale.getDefault());
+		sdf.setCalendar(calendar);
 		TextView beginDate = (TextView) view
 				.findViewById(R.id.rentout_slot_begin_date);
 		beginDate.setTextSize(sp);
-		beginDate.setText(calendar.get(Calendar.DATE) + "."
-				+ (calendar.get(Calendar.MONTH) + 1) + "."
-				+ calendar.get(Calendar.YEAR));
+		beginDate.setText(sdf.format(calendar.getTime()));
+
+		sdf.applyPattern("HH:mm");
 		TextView beginTime = (TextView) view
 				.findViewById(R.id.rentout_slot_begin_time);
 		beginTime.setTextSize(sp);
-		beginTime.setText(calendar.get(Calendar.HOUR) + ":"
-				+ calendar.get(Calendar.MINUTE));
+		beginTime.setText(sdf.format(calendar.getTime()));
 
 		// Standard Anzahl Stunden addieren & End-Datum setzen
 		calendar.add(Calendar.HOUR, BASIC_INCREMENT);
+		sdf = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+		sdf.setCalendar(calendar);
 		TextView endDate = (TextView) view
 				.findViewById(R.id.rentout_slot_end_date);
 		endDate.setTextSize(sp);
-		endDate.setText(calendar.get(Calendar.DATE) + "."
-				+ (calendar.get(Calendar.MONTH) + 1) + "."
-				+ calendar.get(Calendar.YEAR));
+		endDate.setText(sdf.format(calendar.getTime()));
+
+		sdf.applyPattern("HH:mm");
 		TextView endTime = (TextView) view
 				.findViewById(R.id.rentout_slot_end_time);
 		endTime.setTextSize(sp);
-		endTime.setText(calendar.get(Calendar.HOUR) + ":"
-				+ calendar.get(Calendar.MINUTE));
+		endTime.setText(sdf.format(calendar.getTime()));
 	}
 }

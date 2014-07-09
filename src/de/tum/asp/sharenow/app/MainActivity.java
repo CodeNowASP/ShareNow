@@ -1,8 +1,18 @@
 package de.tum.asp.sharenow.app;
 
+import java.io.ByteArrayOutputStream;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import de.tum.asp.sharenow.R;
+import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.dialogs.DatePickerFragment;
 import de.tum.asp.sharenow.dialogs.TimePickerFragment;
+import de.tum.asp.sharenow.util.Place;
+import de.tum.asp.sharenow.util.Slot;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -12,6 +22,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 /**
@@ -247,6 +259,75 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Element, von dem aus die Methode aufgerufen wird.
 	 */
 	public void rentOut(View view) {
-		// TODO
+		LocalDatabase db = new LocalDatabase(getApplicationContext());
+		SessionManager sm = new SessionManager(getApplicationContext());
+		
+		if(sm.loggedIn()) {
+
+		// Parkplatz erstellen
+		Place place = new Place();
+		place.setUserId(sm.getId());
+		EditText address = (EditText) findViewById(R.id.rentout_address_input);
+		place.setAddress(address.getText().toString());
+		EditText description = (EditText) findViewById(R.id.rentout_description_input);
+		place.setDescription(description.getText().toString());
+
+		// Bild zuerst in Byte Array umwandeln
+		ImageView image = (ImageView) findViewById(R.id.rentout_image);
+		image.setDrawingCacheEnabled(true);
+		image.buildDrawingCache();
+		Bitmap bm = image.getDrawingCache();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		byte[] byteArray = stream.toByteArray();
+		place.setImage(byteArray);
+
+		EditText price = (EditText) findViewById(R.id.rentout_price_input);
+		String pricePerHour = price.getText().toString().replace(",", ".");
+		place.setPricePerHour(Double.parseDouble(pricePerHour));
+		db.insert(place);
+
+		// Slot erstellen
+		Slot slot = new Slot();
+		slot.setPlaceId(place.getId());
+		slot.setReserved(false);
+
+		// Datum & Uhrzeit aus Strings auslesen
+		TextView dateView = (TextView) findViewById(R.id.rentout_slot_begin_date);
+		TextView timeView = (TextView) findViewById(R.id.rentout_slot_begin_time);
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+					.parse(dateView.getText().toString() + " "
+							+ timeView.getText().toString());
+		} catch (ParseException e) {
+		}
+		slot.setDateStart(new Timestamp(date.getTime()));
+		dateView = (TextView) findViewById(R.id.rentout_slot_end_date);
+		timeView = (TextView) findViewById(R.id.rentout_slot_end_time);
+		try {
+			date = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+					.parse(dateView.getText().toString() + " "
+							+ timeView.getText().toString());
+		} catch (ParseException e) {
+		}
+		slot.setDateEnd(new Timestamp(date.getTime()));
+		RadioButton weekly = (RadioButton) findViewById(R.id.rentout_slot_regularly_button);
+		slot.setWeekly(weekly.isChecked());
+		db.insert(slot);
+		// TODO: zu Parkplatzanzeige wechseln wenn implementiert
+		mViewPager.setCurrentItem(3);
+		} else {
+			// Nutzer nicht eingeloggt
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.rentout_popup_text);
+			builder.setPositiveButton(R.string.rentout_popup_ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+						}
+					});
+			AlertDialog dialog = builder.create();
+			dialog.show();
+		}
 	}
 }

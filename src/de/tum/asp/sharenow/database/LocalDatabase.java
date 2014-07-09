@@ -86,6 +86,7 @@ public class LocalDatabase {
 				.getDateEnd().toString());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_RESERVED,
 				slot.isReserved());
+		values.put(DatabaseContract.Slots.COLUMN_NAME_WEEKLY, slot.isWeekly());
 
 		// Datensatz einfügen & erzeugte _id in slot schreiben
 		long id = db.insert(DatabaseContract.Slots.TABLE_NAME, null, values);
@@ -187,6 +188,7 @@ public class LocalDatabase {
 				.getDateEnd().toString());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_RESERVED,
 				slot.isReserved());
+		values.put(DatabaseContract.Slots.COLUMN_NAME_WEEKLY, slot.isWeekly());
 
 		// Datensatz überschreiben
 		db.update(DatabaseContract.Slots.TABLE_NAME, values, "_id=?",
@@ -324,6 +326,8 @@ public class LocalDatabase {
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID)));
 			slot.setReserved(cursor.getInt(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED)) == 1);
+			slot.setWeekly(cursor.getInt(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_WEEKLY)) == 1);
 
 			// Start- und Enddatum von String in java.sql.Timestamp umwandeln
 			String dateStart = cursor

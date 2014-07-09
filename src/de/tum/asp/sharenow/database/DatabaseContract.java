@@ -88,6 +88,7 @@ public final class DatabaseContract {
 		public static final String COLUMN_NAME_DATE_START = "dateStart";
 		public static final String COLUMN_NAME_DATE_END = "dateEnd";
 		public static final String COLUMN_NAME_RESERVED = "reserved";
+		public static final String COLUMN_NAME_WEEKLY = "weekly";
 
 		/**
 		 * SQL-Anweisung zum Erstellen der Datenbank "users".
@@ -96,7 +97,8 @@ public final class DatabaseContract {
 				+ TABLE_NAME + " (" + ID + " INTEGER PRIMARY KEY, "
 				+ COLUMN_NAME_PLACE_ID + " INTEGER, " + COLUMN_NAME_DATE_START
 				+ " TIMESTAMP, " + COLUMN_NAME_DATE_END + " TIMESTAMP, "
-				+ COLUMN_NAME_RESERVED + " BOOLEAN" + ")";
+				+ COLUMN_NAME_RESERVED + " BOOLEAN, " + COLUMN_NAME_WEEKLY
+				+ " BOOLEAN" + ")";
 
 		/**
 		 * SQL-Anweisung zum Löschen der Datenbank "slots".
