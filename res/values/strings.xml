@@ -6,7 +6,6 @@
     <string name="title_section1">Search</string>
     <string name="title_section2">Rent Out</string>
     <string name="title_section3">Profile</string>
-    <string name="title_register_activity">Register</string>
 
     <!-- Login Menü in der Action Bar -->
     <string name="actionbar_menu_title">Login</string>
@@ -37,7 +36,7 @@
     <string name="rentout_text">Please enter the details of your parking spot.</string>
     <string name="rentout_address">Address</string>
     <string name="rentout_description">Description</string>
-    <string name="rentout_price">Price Per Hour in €</string>
+    <string name="rentout_price">Price Per Hour In Euro</string>
     <string name="rentout_slot_title">Availability</string>
     <string name="rentout_slot_begin">From</string>
     <string name="rentout_slot_end">Until</string>
@@ -52,5 +51,21 @@
     <string name="rentout_button">Rent Out</string>
     <string name="rentout_popup_text">Please login first.</string>
     <string name="rentout_popup_ok">OK</string>
+
+    <!-- Search Fragment -->
+    <string name="search_quick_title">Quick Search</string>
+    <string name="search_quick_description">Find a place near you for the specified number of hours.</string>
+    <string name="search_quick_button">Quick Search</string>
+    <string name="search_advanced_title">Advanced Search</string>
+    <string name="search_advanced_slot_begin">From</string>
+    <string name="search_advanced_slot_end">Until</string>
+    <string name="search_advanced_slot_time">Time</string>
+    <string name="search_advanced_slot_date">Date</string>
+    <string name="search_advanced_address">Address</string>
+    <string name="search_advanced_distance">Maximum Distance In Kilometers</string>
+    <string name="search_advanced_button">Advanced Search</string>
+
+    <!-- Map Activity -->
+    <string name="map_title">Results</string>
 
 </resources>

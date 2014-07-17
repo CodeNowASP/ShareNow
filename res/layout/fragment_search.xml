@@ -1,24 +1,163 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="?attr/actionBarSize"
-    tools:context="de.tum.asp.sharenow.app.MainActivity$PlaceholderFragment" >
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingTop="97dp" >
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Suchen" />
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        tools:context="de.tum.asp.sharenow.app.MainActivity" >
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/search_quick_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:text="@string/search_quick_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/search_quick_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_quick_title"
+            android:text="@string/search_quick_description" />
+
+        <EditText
+            android:id="@+id/search_quick_minutes_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_quick_description"
+            android:inputType="number"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/search_quick_button"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_quick_minutes_input"
+            android:onClick="searchQuick"
+            android:text="@string/search_quick_button" />
+
+        <TextView
+            android:id="@+id/search_advanced_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_quick_button"
+            android:text="@string/search_advanced_title"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_begin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_title"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_begin" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_begin_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/search_advanced_title"
+            android:clickable="true"
+            android:onClick="pickTime"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_time" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_begin_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_title"
+            android:layout_toLeftOf="@id/search_advanced_slot_begin_time"
+            android:clickable="true"
+            android:onClick="pickDate"
+            android:paddingBottom="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_date" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_slot_begin"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_end" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/search_advanced_slot_begin"
+            android:clickable="true"
+            android:onClick="pickTime"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_time" />
+
+        <TextView
+            android:id="@+id/search_advanced_slot_end_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_slot_begin"
+            android:layout_toLeftOf="@id/search_advanced_slot_end_time"
+            android:clickable="true"
+            android:onClick="pickDate"
+            android:paddingBottom="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/search_advanced_slot_date" />
+
+        <TextView
+            android:id="@+id/search_advanced_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_slot_end"
+            android:text="@string/search_advanced_address" />
+
+        <EditText
+            android:id="@+id/search_advanced_address_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_address"
+            android:inputType="textPostalAddress"
+            android:text="Arcisstraße 21, München" />
+
+        <TextView
+            android:id="@+id/search_advanced_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_address_input"
+            android:text="@string/search_advanced_distance" />
+
+        <EditText
+            android:id="@+id/search_advanced_distance_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_distance"
+            android:inputType="numberDecimal"
+            android:text="1" />
+
+        <Button
+            android:id="@+id/search_advanced_button"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_advanced_distance_input"
+            android:onClick="searchAdvanced"
+            android:text="@string/search_advanced_button" />
+    </RelativeLayout>
+
+</ScrollView>
