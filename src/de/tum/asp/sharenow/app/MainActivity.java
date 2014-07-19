@@ -11,6 +11,7 @@ import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.dialogs.DatePickerFragment;
 import de.tum.asp.sharenow.dialogs.TimePickerFragment;
+import de.tum.asp.sharenow.util.DateConverter;
 import de.tum.asp.sharenow.util.Place;
 import de.tum.asp.sharenow.util.Slot;
 import android.support.v7.app.ActionBarActivity;
@@ -263,8 +264,7 @@ public class MainActivity extends ActionBarActivity implements
 		SessionManager sm = new SessionManager(getApplicationContext());
 
 		if (sm.loggedIn()) {
-
-			// Parkplatz erstellen
+			// Nutzer eingeloggt, Parkplatz erstellen
 			Place place = new Place();
 			place.setUserId(sm.getId());
 			EditText address = (EditText) findViewById(R.id.rentout_address_input);
@@ -293,32 +293,20 @@ public class MainActivity extends ActionBarActivity implements
 			slot.setReserved(false);
 
 			// Datum & Uhrzeit aus Strings auslesen
+			DateConverter dateConverter = new DateConverter();
 			TextView dateView = (TextView) findViewById(R.id.rentout_slot_begin_date);
 			TextView timeView = (TextView) findViewById(R.id.rentout_slot_begin_time);
-			Date date = null;
-			try {
-				date = new SimpleDateFormat("dd.MM.yyyy HH:mm",
-						Locale.getDefault()).parse(dateView.getText()
-						.toString() + " " + timeView.getText().toString());
-			} catch (ParseException e) {
-			}
-			slot.setDateStart(new Timestamp(date.getTime()));
+			slot.setDateStart(dateConverter.fromTextViews(dateView, timeView));
 			dateView = (TextView) findViewById(R.id.rentout_slot_end_date);
 			timeView = (TextView) findViewById(R.id.rentout_slot_end_time);
-			try {
-				date = new SimpleDateFormat("dd.MM.yyyy HH:mm",
-						Locale.getDefault()).parse(dateView.getText()
-						.toString() + " " + timeView.getText().toString());
-			} catch (ParseException e) {
-			}
-			slot.setDateEnd(new Timestamp(date.getTime()));
+			slot.setDateEnd(dateConverter.fromTextViews(dateView, timeView));
+
 			RadioButton weekly = (RadioButton) findViewById(R.id.rentout_slot_regularly_button);
 			slot.setWeekly(weekly.isChecked());
 			db.insert(slot);
-			// TODO: zu Parkplatzanzeige wechseln wenn implementiert
 			mViewPager.setCurrentItem(3);
 		} else {
-			// Nutzer nicht eingeloggt
+			// Nutzer nicht eingeloggt, Fehlermeldung ausgeben
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(R.string.rentout_popup_text);
 			builder.setPositiveButton(R.string.rentout_popup_ok,
@@ -338,8 +326,13 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Element, von dem aus die Methode aufgerufen wird.
 	 */
 	public void searchQuick(View view) {
-		// TODO implementieren
 		Intent intent = new Intent(this, MapViewActivity.class);
+		EditText hourInput = (EditText) findViewById(R.id.search_quick_minutes_input);
+
+		// gewünschte Anzahl Stunden an Intent anhängen
+		int hours = Integer.parseInt(hourInput.getText().toString());
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_HOURS, hours);
+
 		startActivity(intent);
 	}
 
@@ -350,8 +343,28 @@ public class MainActivity extends ActionBarActivity implements
 	 *            Element, von dem aus die Methode aufgerufen wird.
 	 */
 	public void searchAdvanced(View view) {
-		// TODO implementieren
 		Intent intent = new Intent(this, MapViewActivity.class);
+
+		// Parameter für komplexe Suche an Intent anhängen
+		TextView dateViewStart = (TextView) findViewById(R.id.search_advanced_slot_begin_date);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_START_DATE, dateViewStart
+				.getText().toString());
+		TextView timeViewStart = (TextView) findViewById(R.id.search_advanced_slot_begin_time);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_START_TIME, timeViewStart
+				.getText().toString());
+		TextView dateViewEnd = (TextView) findViewById(R.id.search_advanced_slot_end_date);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_END_DATE, dateViewEnd
+				.getText().toString());
+		TextView timeViewEnd = (TextView) findViewById(R.id.search_advanced_slot_end_time);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_END_TIME, timeViewEnd
+				.getText().toString());
+		EditText address = (EditText) findViewById(R.id.search_advanced_address_input);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_ADDRESS, address.getText()
+				.toString());
+		EditText distance = (EditText) findViewById(R.id.search_advanced_distance_input);
+		intent.putExtra(MapViewActivity.INTENT_EXTRA_DISTANCE,
+				Double.parseDouble(distance.getText().toString()));
+
 		startActivity(intent);
 	}
 }
