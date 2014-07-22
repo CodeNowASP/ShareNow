@@ -1,13 +1,13 @@
 package de.tum.asp.sharenow.app;
 
 import java.sql.Timestamp;
-import java.util.concurrent.ExecutionException;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.util.DateConverter;
@@ -50,11 +50,6 @@ public class MapViewActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
 
 		// Parameter von Intent holen
 		DateConverter dateConverter = new DateConverter();
@@ -68,14 +63,9 @@ public class MapViewActivity extends FragmentActivity {
 			end = new Timestamp(currentTime + hours * 3600 * 1000);
 
 			// aktuelle Position bestimmen
-			ProgressDialog dialog = ProgressDialog.show(MapViewActivity.this,
-					"Retrieving position", "Please wait...", true);
-			GetPosition gp = new GetPosition();
-			gp.execute(dialog);
-			try {
-				location = gp.get();
-			} catch (InterruptedException | ExecutionException e) {
-			}
+			GetPosition gp = new GetPosition(this);
+			gp.execute();
+
 		} else {
 			// komplexe Suche ausgeführt
 			String dateStart = getIntent().getExtras().getString(
@@ -96,11 +86,6 @@ public class MapViewActivity extends FragmentActivity {
 		// TODO: alle daten eingetragen, was damit machen
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
-		map.animateCamera(CameraUpdateFactory
-				.newCameraPosition(new CameraPosition.Builder().target(
-						new LatLng(location.getLatitude(), location
-								.getLongitude())).build()));
-
 	}
 
 	@Override
@@ -109,18 +94,60 @@ public class MapViewActivity extends FragmentActivity {
 		return true;
 	}
 
+	/**
+	 * Google Maps Karte auf eine bestimmte Position ausrichten.
+	 * 
+	 * @param location
+	 *            Position, auf welche die Karte ausgerichtet werden soll.
+	 */
+	public void zoomToLocation(Location location) {
+		map.animateCamera(CameraUpdateFactory
+				.newCameraPosition(new CameraPosition.Builder().target(
+						new LatLng(location.getLatitude(), location
+								.getLongitude())).build()));
+
+		// TODO dummy marker ersetzen
+		map.addMarker(new MarkerOptions().position(new LatLng(48.1351253,
+				11.5819806)));
+		map.addMarker(new MarkerOptions()
+				.position(new LatLng(48.14726751, 11.5788907))
+				.title("My Spot")
+				.snippet("This is my spot!")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+		map.addMarker(new MarkerOptions()
+				.position(new LatLng(48.13283399, 11.54473008))
+				.title("My Spot")
+				.snippet("This is my spot!")
+				.icon(BitmapDescriptorFactory
+						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+	}
+
 	// Klasse um asynchron auf eine GPS-Position zu warten
-	private class GetPosition extends AsyncTask<ProgressDialog, Void, Location> {
+	private class GetPosition extends AsyncTask<Void, Void, Location> {
+
+		private ProgressDialog dialog;
+		MapViewActivity mapViewActivity;
+
+		public GetPosition(MapViewActivity mapViewActivity) {
+			this.mapViewActivity = mapViewActivity;
+		}
 
 		@Override
-		protected Location doInBackground(ProgressDialog... params) {
+		protected void onPreExecute() {
+			super.onPreExecute();
+			dialog = ProgressDialog.show(mapViewActivity,
+					"Retrieving position", "Please wait...", true, true);
+		}
+
+		@Override
+		protected Location doInBackground(Void... params) {
 
 			// Location Services aktivieren
 			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			Intent intent = new Intent(getApplicationContext(),
-					MapViewActivity.class);
+			Intent intent = new Intent(mapViewActivity, MapViewActivity.class);
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(
-					getApplicationContext(), 0, intent,
+					mapViewActivity, 0, intent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
 			String provider = locationManager.getBestProvider(new Criteria(),
 					true);
@@ -132,8 +159,17 @@ public class MapViewActivity extends FragmentActivity {
 			while (location == null) {
 				location = locationManager.getLastKnownLocation(provider);
 			}
-			params[0].dismiss();
 			return location;
+
+		}
+
+		@Override
+		protected void onPostExecute(Location result) {
+			super.onPostExecute(result);
+			if (result != null) {
+				mapViewActivity.zoomToLocation(result);
+			}
+			dialog.dismiss();
 		}
 	}
 

@@ -64,6 +64,8 @@
     <string name="search_advanced_address">Address</string>
     <string name="search_advanced_distance">Maximum Distance In Kilometers</string>
     <string name="search_advanced_button">Advanced Search</string>
+    <string name="search_popup_text">Location not found.</string>
+    <string name="search_popup_ok">OK</string>
 
     <!-- Map Activity -->
     <string name="map_title">Results</string>
