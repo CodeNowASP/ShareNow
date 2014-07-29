@@ -30,6 +30,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Menu;
 
 /**
@@ -115,6 +116,7 @@ public class MapViewActivity extends FragmentActivity {
 	 *            Position, bei der die Parkplätze gesucht werden.
 	 */
 	public void findSpots(Location location) {
+		Log.d("OLO", "angekommen!");
 		HashMap<Marker, Place> markers = new HashMap<Marker, Place>();
 		Builder boundsBuilder = new LatLngBounds.Builder();
 		// Postion auf Karte anzeigen
@@ -126,7 +128,7 @@ public class MapViewActivity extends FragmentActivity {
 		boundsBuilder.include(mOpt.getPosition());
 		// alle Parkplätze durchgehen
 		Geocoder coder = new Geocoder(this);
-		for (Place place : db.getPlaces()) {
+		for (Place place : db.getPlaces(-1)) {
 			// Adresse in Koordinaten umwandeln
 			List<Address> addresses = null;
 			try {
@@ -143,6 +145,7 @@ public class MapViewActivity extends FragmentActivity {
 				double distToPlace = placeLocation.distanceTo(location);
 				boolean hasFreeSlot = false;
 				boolean slotReserved = false;
+				Slot reservedSlot = null;
 				for (Slot slot : db.getSlots(place.getId())) {
 					boolean currentSlotHasFreeSlot = slot.getDateStart()
 							.before(start);
@@ -151,6 +154,7 @@ public class MapViewActivity extends FragmentActivity {
 					hasFreeSlot = currentSlotHasFreeSlot || hasFreeSlot;
 					if (slot.isReserved()) {
 						slotReserved = slot.overlapsWith(start, end);
+						reservedSlot = slot;
 					}
 				}
 				if ((distToPlace / 1000) <= distance && hasFreeSlot) {
@@ -164,14 +168,24 @@ public class MapViewActivity extends FragmentActivity {
 								.icon(BitmapDescriptorFactory
 										.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 					} else {
-						// Slot reserviert, andere Farbe
+						// Slot reserviert, andere Farbe + anderer Text
+						String text;
+						if (reservedSlot != null) {
+							DateConverter dc = new DateConverter();
+							text = getText(R.string.map_in_use_text_1)
+									.toString();
+							text += " "
+									+ dc.toString(reservedSlot.getDateEnd())
+									+ ".";
+						} else {
+							text = getText(R.string.map_in_use_text_2)
+									.toString();
+						}
 						marker = new MarkerOptions()
 								.position(new LatLng(lat, lon))
 								.title(getText(R.string.map_in_use_title)
 										.toString())
-								.snippet(
-										getText(R.string.map_in_use_text)
-												.toString())
+								.snippet(text)
 								.icon(BitmapDescriptorFactory
 										.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
 					}

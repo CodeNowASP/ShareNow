@@ -21,6 +21,10 @@
     <string name="profile_login_popup_text">Invalid mail or password.</string>
     <string name="profile_login_popup_ok">OK</string>
     <string name="profile_register_button">Register</string>
+    <!-- Profile Fragment -->
+    <string name="profile_view_places_button">Show Places</string>
+    <string name="profile_view_own_reservations_button">Show Reservations</string>
+    <string name="profile_view_place_reservations_button">Show Place Uses</string>
 
     <!-- Register Aktivität -->
     <string name="register_title">Register</string>
@@ -72,7 +76,8 @@
     <string name="map_nothing_found_popup_text">No Results.</string>
     <string name="map_nothing_found_popup_ok">OK</string>
     <string name="map_in_use_title">Currently Not Available</string>
-    <string name="map_in_use_text">This spot is already occupied, sorry.</string>
+    <string name="map_in_use_text_1">Occupied until</string>
+    <string name="map_in_use_text_2">This spot is already occupied, sorry.</string>
     <string name="map_infowindow_title">Available!</string>
     <string name="book_dialog_image_descriptor">Spot picture</string>
     <string name="book_dialog_button">Book!</string>

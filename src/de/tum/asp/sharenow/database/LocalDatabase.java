@@ -1,6 +1,7 @@
 package de.tum.asp.sharenow.database;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import de.tum.asp.sharenow.util.Place;
@@ -82,6 +83,7 @@ public class LocalDatabase {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID,
 				slot.getPlaceId());
+		values.put(DatabaseContract.Slots.COLUMN_NAME_USER_ID, slot.getUserId());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_DATE_START, slot
 				.getDateStart().toString());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_DATE_END, slot
@@ -184,6 +186,7 @@ public class LocalDatabase {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID,
 				slot.getPlaceId());
+		values.put(DatabaseContract.Slots.COLUMN_NAME_USER_ID, slot.getUserId());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_DATE_START, slot
 				.getDateStart().toString());
 		values.put(DatabaseContract.Slots.COLUMN_NAME_DATE_END, slot
@@ -298,13 +301,15 @@ public class LocalDatabase {
 	/**
 	 * Die Datensätze aller Parkplätze aus der Datenbank auslesen.
 	 * 
+	 * @param id
+	 *            ID des Nutzers, falls -1 werden alle Plätze ausgegeben.
 	 * @return Die Datensätze aller Parkplätze. Null, falls keine Parkplätze
 	 *         existieren.
 	 */
-	public HashSet<Place> getPlaces() {
+	public ArrayList<Place> getPlaces(long id) {
 		DatabaseHelper dbHelper = new DatabaseHelper(context);
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		HashSet<Place> places = new HashSet<Place>();
+		ArrayList<Place> places = new ArrayList<Place>();
 
 		// festlegen welche Spalten zurückgegeben werden
 		String[] projection = { DatabaseContract.Places._ID,
@@ -319,8 +324,15 @@ public class LocalDatabase {
 				DatabaseContract.Places.COLUMN_NAME_RATING };
 
 		// Parkplätze abfragen
-		Cursor cursor = db.query(DatabaseContract.Places.TABLE_NAME,
-				projection, null, new String[] {}, null, null, null);
+		Cursor cursor = null;
+		if (id == -1) {
+			cursor = db.query(DatabaseContract.Places.TABLE_NAME, projection,
+					null, new String[] {}, null, null, null);
+		} else {
+			cursor = db.query(DatabaseContract.Places.TABLE_NAME, projection,
+					DatabaseContract.Places.COLUMN_NAME_USER_ID + "=?",
+					new String[] { Long.toString(id) }, null, null, null);
+		}
 		cursor.moveToFirst();
 
 		while (!cursor.isAfterLast()) {
@@ -358,6 +370,27 @@ public class LocalDatabase {
 	}
 
 	/**
+	 * Berechnet die Anzahl Parkplätze eines Nutzers.
+	 * 
+	 * @param id
+	 *            Die ID des Nutzers.
+	 * @return Die Anzahl an Parkplätzen.
+	 */
+	public int getNumberOfPlaces(long id) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+		// Parkplätze abfragen
+		Cursor cursor = db.query(DatabaseContract.Places.TABLE_NAME,
+				new String[] {}, DatabaseContract.Places.COLUMN_NAME_USER_ID
+						+ "=?", new String[] { Long.toString(id) }, null, null,
+				null);
+		int count = cursor.getCount();
+		dbHelper.close();
+		return count;
+	}
+
+	/**
 	 * Den Datensatz eines Slots aus der Datenbank auslesen.
 	 * 
 	 * @param id
@@ -371,6 +404,7 @@ public class LocalDatabase {
 
 		// festlegen welche Spalten zurückgegeben werden
 		String[] projection = { DatabaseContract.Slots.COLUMN_NAME_PLACE_ID,
+				DatabaseContract.Slots.COLUMN_NAME_USER_ID,
 				DatabaseContract.Slots.COLUMN_NAME_DATE_START,
 				DatabaseContract.Slots.COLUMN_NAME_DATE_END,
 				DatabaseContract.Slots.COLUMN_NAME_RESERVED };
@@ -388,6 +422,8 @@ public class LocalDatabase {
 			slot.setId(id);
 			slot.setPlaceId(cursor.getLong(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID)));
+			slot.setUserId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_USER_ID)));
 			slot.setReserved(cursor.getInt(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED)) == 1);
 			slot.setWeekly(cursor.getInt(cursor
@@ -427,6 +463,7 @@ public class LocalDatabase {
 		// festlegen welche Spalten zurückgegeben werden
 		String[] projection = { DatabaseContract.Slots._ID,
 				DatabaseContract.Slots.COLUMN_NAME_PLACE_ID,
+				DatabaseContract.Slots.COLUMN_NAME_USER_ID,
 				DatabaseContract.Slots.COLUMN_NAME_DATE_START,
 				DatabaseContract.Slots.COLUMN_NAME_DATE_END,
 				DatabaseContract.Slots.COLUMN_NAME_RESERVED,
@@ -446,6 +483,8 @@ public class LocalDatabase {
 					.getColumnIndexOrThrow(DatabaseContract.Slots.ID)));
 			slot.setPlaceId(cursor.getLong(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID)));
+			slot.setUserId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_USER_ID)));
 			slot.setReserved(cursor.getInt(cursor
 					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED)) == 1);
 			slot.setWeekly(cursor.getInt(cursor
@@ -469,6 +508,82 @@ public class LocalDatabase {
 
 		// Slot-Objekte zurückgeben
 		return slots;
+	}
+
+	/**
+	 * Anzahl der Buchungen der Parkplätze eines Nutzers berechnen.
+	 * 
+	 * @param id
+	 *            Die ID des Nutzers.
+	 * @return Die Anzahl Buchungen.
+	 */
+	public int getNumberOfUses(long id) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		int count = 0;
+
+		// über Plätze iterieren
+		ArrayList<Place> places = getPlaces(id);
+		for (Place place : places) {
+			// Slots durchgehen
+			Cursor cursor = db.query(DatabaseContract.Slots.TABLE_NAME,
+					new String[] {},
+					DatabaseContract.Slots.COLUMN_NAME_PLACE_ID + "=?",
+					new String[] { Long.toString(place.getId()) }, null, null,
+					null);
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				if (cursor
+						.getInt(cursor
+								.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED)) == 1) {
+					count++;
+				}
+				cursor.moveToNext();
+			}
+		}
+		// Referenz auf Datenbank schließen
+		dbHelper.close();
+		return count;
+	}
+
+	/**
+	 * Anzahl der Reservierungen eines Nutzers berechnen.
+	 * 
+	 * @param id
+	 *            Die ID des Nutzers.
+	 * @return Die Anzahl Reservierungen.
+	 */
+	public int getNumberOfReservations(long id) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		int count = 0;
+
+		// über Plätze iterieren
+		ArrayList<Place> places = getPlaces(-1);
+		for (Place place : places) {
+			// Slots durchgehen
+			Cursor cursor = db.query(DatabaseContract.Slots.TABLE_NAME,
+					new String[] {},
+					DatabaseContract.Slots.COLUMN_NAME_PLACE_ID + "=?",
+					new String[] { Long.toString(place.getId()) }, null, null,
+					null);
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				int reservedIndex = cursor
+						.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED);
+				int userIdIndex = cursor
+						.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED);
+				if (cursor.getInt(reservedIndex) == 1
+						&& cursor.getLong(userIdIndex) == id) {
+					count++;
+				}
+				cursor.moveToNext();
+			}
+
+		}
+		// Referenz auf Datenbank schließen
+		dbHelper.close();
+		return count;
 	}
 
 	/**

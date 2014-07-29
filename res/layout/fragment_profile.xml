@@ -9,9 +9,46 @@
     tools:context="de.tum.asp.sharenow.app.MainActivity" >
 
     <TextView
-        android:id="@+id/profile_login_mail_text"
+        android:id="@+id/profile_view_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PROFILE" />
+        android:layout_centerHorizontal="true"
+        android:padding="5dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/profile_view_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_view_title"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp" />
+
+    <Button
+        android:id="@+id/profile_view_places_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_view_subtitle"
+        android:onClick="viewPlaces"
+        android:text="@string/profile_view_places_button" >
+    </Button>
+
+    <Button
+        android:id="@+id/profile_view_own_reservations_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_view_places_button"
+        android:onClick="viewOwnReservations"
+        android:text="@string/profile_view_own_reservations_button" >
+    </Button>
+
+    <Button
+        android:id="@+id/profile_view_place_reservations_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/profile_view_own_reservations_button"
+        android:onClick="viewPlaceReservations"
+        android:text="@string/profile_view_place_reservations_button" >
+    </Button>
 
 </RelativeLayout>

@@ -57,7 +57,8 @@ public class BookFragment extends DialogFragment {
 		Button button = (Button) v.findViewById(R.id.book_dialog_button);
 		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Slot slot = new Slot(place.getId(), start, end, true, false);
+				Slot slot = new Slot(place.getId(), place.getUserId(), start,
+						end, true, false);
 				LocalDatabase db = new LocalDatabase(getActivity());
 				db.insert(slot);
 				BookFragment.this.dismiss();

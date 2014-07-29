@@ -1,13 +1,18 @@
 package de.tum.asp.sharenow.app;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.dialogs.DatePickerFragment;
 import de.tum.asp.sharenow.dialogs.TimePickerFragment;
+import de.tum.asp.sharenow.lists.ArrayAdapterItem;
+import de.tum.asp.sharenow.lists.OnItemClickListenerListViewItem;
 import de.tum.asp.sharenow.util.DateConverter;
 import de.tum.asp.sharenow.util.Place;
 import de.tum.asp.sharenow.util.Slot;
+import de.tum.asp.sharenow.util.User;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
@@ -28,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -284,6 +290,7 @@ public class MainActivity extends ActionBarActivity implements
 			// Slot erstellen
 			Slot slot = new Slot();
 			slot.setPlaceId(place.getId());
+			slot.setPlaceId(place.getUserId());
 			slot.setReserved(false);
 
 			// Datum & Uhrzeit aus Strings auslesen
@@ -360,5 +367,125 @@ public class MainActivity extends ActionBarActivity implements
 				Double.parseDouble(distance.getText().toString()));
 
 		startActivity(intent);
+	}
+
+	/**
+	 * Liste mit Parkplätzen eines Nutzers anzeigen.
+	 * 
+	 * @param view
+	 *            Button von dem aus die Funktion aufgerufen wurde.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void viewPlaces(View view) {
+		LocalDatabase db = new LocalDatabase(this);
+		SessionManager sm = new SessionManager(this);
+		User user = db.getUser(sm.getId());
+		ArrayList places = db.getPlaces(user.getId());
+
+		// http://www.codeofaninja.com/2013/09/android-listview-with-adapter-example.html
+		AlertDialog.Builder alertDialogBuilder;
+		ArrayAdapterItem adapter = new ArrayAdapterItem(this,
+				R.layout.list_view_row_item, places);
+		ListView listViewItems = new ListView(this);
+		listViewItems.setAdapter(adapter);
+		listViewItems
+				.setOnItemClickListener(new OnItemClickListenerListViewItem(
+						adapter));
+		alertDialogBuilder = new AlertDialog.Builder(MainActivity.this)
+				.setMessage("Click on a place to remove it.")
+				.setView(listViewItems).setTitle("Your Places");
+		alertDialogBuilder.setPositiveButton("Close",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+
+		alertDialogBuilder.show();
+	}
+
+	/**
+	 * Reservierungen eines Nutzers anzeigen.
+	 * 
+	 * @param view
+	 *            Button von dem aus die Funktion aufgerufen wurde.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void viewOwnReservations(View view) {
+		LocalDatabase db = new LocalDatabase(this);
+		SessionManager sm = new SessionManager(this);
+		User user = db.getUser(sm.getId());
+		ArrayList slots = new ArrayList<Slot>();
+		for (Place place : db.getPlaces(-1)) {
+			for (Slot slot : db.getSlots(place.getId())) {
+				if (slot.isReserved() && slot.getUserId() == user.getId()) {
+					slots.add(slot);
+				}
+			}
+		}
+
+		// http://www.codeofaninja.com/2013/09/android-listview-with-adapter-example.html
+		AlertDialog.Builder alertDialogBuilder;
+		ArrayAdapterItem adapter = new ArrayAdapterItem(this,
+				R.layout.list_view_row_item, slots);
+		ListView listViewItems = new ListView(this);
+		listViewItems.setAdapter(adapter);
+		listViewItems
+				.setOnItemClickListener(new OnItemClickListenerListViewItem(
+						adapter));
+		alertDialogBuilder = new AlertDialog.Builder(MainActivity.this)
+				.setMessage("Click on a reservation to cancel it.")
+				.setView(listViewItems).setTitle("Your Reservations");
+		alertDialogBuilder.setPositiveButton("Close",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+		alertDialogBuilder.show();
+	}
+
+	/**
+	 * Nutzungen der Parkplätze eines Nutzers anzeigen.
+	 * 
+	 * @param view
+	 *            Button von dem aus die Funktion aufgerufen wurde.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void viewPlaceReservations(View view) {
+		LocalDatabase db = new LocalDatabase(this);
+		SessionManager sm = new SessionManager(this);
+		User user = db.getUser(sm.getId());
+		ArrayList slots = new ArrayList<Slot>();
+		for (Place place : db.getPlaces(user.getId())) {
+			for (Slot slot : db.getSlots(place.getId())) {
+				if (slot.isReserved()) {
+					slots.add(slot);
+				}
+			}
+		}
+
+		// http://www.codeofaninja.com/2013/09/android-listview-with-adapter-example.html
+		AlertDialog.Builder alertDialogBuilder;
+		ArrayAdapterItem adapter = new ArrayAdapterItem(this,
+				R.layout.list_view_row_item, slots);
+		ListView listViewItems = new ListView(this);
+		listViewItems.setAdapter(adapter);
+		listViewItems
+				.setOnItemClickListener(new OnItemClickListenerListViewItem(
+						adapter));
+		alertDialogBuilder = new AlertDialog.Builder(MainActivity.this)
+				.setMessage("Click on a reservation to hide it.")
+				.setView(listViewItems).setTitle("Usage Of Your Places");
+		alertDialogBuilder.setPositiveButton("Close",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+		alertDialogBuilder.show();
 	}
 }

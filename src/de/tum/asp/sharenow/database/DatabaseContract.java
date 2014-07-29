@@ -85,6 +85,7 @@ public final class DatabaseContract {
 		public static final String TABLE_NAME = "slots";
 		public static final String ID = "_id";
 		public static final String COLUMN_NAME_PLACE_ID = "placeId";
+		public static final String COLUMN_NAME_USER_ID = "userId";
 		public static final String COLUMN_NAME_DATE_START = "dateStart";
 		public static final String COLUMN_NAME_DATE_END = "dateEnd";
 		public static final String COLUMN_NAME_RESERVED = "reserved";
@@ -95,10 +96,10 @@ public final class DatabaseContract {
 		 */
 		public static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 				+ TABLE_NAME + " (" + ID + " INTEGER PRIMARY KEY, "
-				+ COLUMN_NAME_PLACE_ID + " INTEGER, " + COLUMN_NAME_DATE_START
-				+ " TIMESTAMP, " + COLUMN_NAME_DATE_END + " TIMESTAMP, "
-				+ COLUMN_NAME_RESERVED + " BOOLEAN, " + COLUMN_NAME_WEEKLY
-				+ " BOOLEAN" + ")";
+				+ COLUMN_NAME_PLACE_ID + " INTEGER, " + COLUMN_NAME_USER_ID
+				+ " INTEGER, " + COLUMN_NAME_DATE_START + " TIMESTAMP, "
+				+ COLUMN_NAME_DATE_END + " TIMESTAMP, " + COLUMN_NAME_RESERVED
+				+ " BOOLEAN, " + COLUMN_NAME_WEEKLY + " BOOLEAN" + ")";
 
 		/**
 		 * SQL-Anweisung zum Löschen der Datenbank "slots".

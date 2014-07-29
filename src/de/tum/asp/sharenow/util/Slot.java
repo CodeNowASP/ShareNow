@@ -9,6 +9,7 @@ public class Slot {
 
 	private long id;
 	private long placeId;
+	private long userId;
 	private Timestamp dateStart;
 	private Timestamp dateEnd;
 	private boolean reserved;
@@ -30,6 +31,9 @@ public class Slot {
 	 * @param placeId
 	 *            Die ID des Parkplatzes in der Datenbank, zu dem dieser Slot
 	 *            gehört.
+	 * @param userId
+	 *            Die ID des Nutzers in der Datenbank, zu dem dieser Slot
+	 *            gehört.
 	 * @param dateStart
 	 *            Das Start-Datum des Slots.
 	 * @param dateEnd
@@ -39,11 +43,12 @@ public class Slot {
 	 * @param weekly
 	 *            Wahr, wenn der Slot wöchentlich wiederholt werden soll.
 	 */
-	public Slot(long id, long placeId, Timestamp dateStart, Timestamp dateEnd,
-			boolean reserved, boolean weekly) {
+	public Slot(long id, long placeId, long userId, Timestamp dateStart,
+			Timestamp dateEnd, boolean reserved, boolean weekly) {
 		super();
 		this.id = id;
 		this.placeId = placeId;
+		this.userId = userId;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
 		this.reserved = reserved;
@@ -57,6 +62,9 @@ public class Slot {
 	 * @param placeId
 	 *            Die ID des Parkplatzes in der Datenbank, zu dem dieser Slot
 	 *            gehört.
+	 * @param userId
+	 *            Die ID des Nutzers in der Datenbank, zu dem dieser Slot
+	 *            gehört.
 	 * @param dateStart
 	 *            Das Start-Datum des Slots.
 	 * @param dateEnd
@@ -66,10 +74,11 @@ public class Slot {
 	 * @param weekly
 	 *            Wahr, wenn der Slot wöchentlich wiederholt werden soll.
 	 */
-	public Slot(long placeId, Timestamp dateStart, Timestamp dateEnd,
-			boolean reserved, boolean weekly) {
+	public Slot(long placeId, long userId, Timestamp dateStart,
+			Timestamp dateEnd, boolean reserved, boolean weekly) {
 		super();
 		this.placeId = placeId;
+		this.userId = userId;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
 		this.reserved = reserved;
@@ -106,6 +115,22 @@ public class Slot {
 	 */
 	public void setPlaceId(long placeId) {
 		this.placeId = placeId;
+	}
+
+	/**
+	 * @return Die ID des Nutzers in der Datenbank, zu dem dieser Slot gehört.
+	 */
+	public long getUserId() {
+		return userId;
+	}
+
+	/**
+	 * @param userId
+	 *            Die neue ID des Nutzers in der Datenbank, zu dem dieser Slot
+	 *            gehört.
+	 */
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	/**
@@ -173,6 +198,7 @@ public class Slot {
 		String s = "Slot(";
 		s += "id:" + id + " ";
 		s += "placeId:" + placeId + " ";
+		s += "userId:" + userId + " ";
 		s += "dateStart:" + dateStart + " ";
 		s += "dateEnd:" + dateEnd + ", ";
 		s += "reserved:" + reserved + ", ";

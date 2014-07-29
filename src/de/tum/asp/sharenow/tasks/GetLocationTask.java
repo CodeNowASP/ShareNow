@@ -8,6 +8,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.util.Log;
 import de.tum.asp.sharenow.app.MapViewActivity;
 
 /**
@@ -37,8 +38,15 @@ public class GetLocationTask extends AsyncTask<String, Void, Location> {
 		List<Address> addresses = null;
 		Location placeLocation = null;
 		try {
-			addresses = coder.getFromLocationName(params[0], 1);
+			for (int i = 0; i < 5; i++) {
+				addresses = coder.getFromLocationName(params[0], 1);
+				if (addresses != null) {
+					break;
+				}
+			}
+
 		} catch (IOException e) {
+			Log.d("OLO", e.toString());
 		}
 		if (addresses != null) {
 			placeLocation = new Location("");
