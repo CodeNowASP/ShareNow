@@ -1,5 +1,11 @@
 package de.tum.asp.sharenow.util;
 
+import java.sql.Timestamp;
+import java.util.HashSet;
+
+import android.content.Context;
+import de.tum.asp.sharenow.database.LocalDatabase;
+
 /**
  * Diese Klasse repräsentiert einen einzelnen Parkplatz.
  */
@@ -268,6 +274,37 @@ public class Place {
 		s += "rating:" + rating;
 		s += ")";
 		return s;
+	}
+
+	/**
+	 * Nächstmöglichen Buchungszeitpunkt berechnen.
+	 * 
+	 * @param context
+	 *            Context der Anwendung.
+	 * @param timestamp
+	 *            Zeitpunkt ab dem eine Buchung gewünscht ist.
+	 * @return Den nächstmöglichen Zeitpunkt zu dem der Platz frei ist.
+	 */
+	public Timestamp getNextFreeTimestamp(Context context, Timestamp timestamp) {
+		LocalDatabase db = new LocalDatabase(context);
+		HashSet<Slot> slots = db.getSlots(id);
+		Slot nextSlot = null;
+		for (Slot slot : slots) {
+			if (nextSlot == null
+					|| slot.getDateStart().before(nextSlot.getDateStart())) {
+				if (slot.getDateEnd().after(timestamp)) {
+					nextSlot = slot;
+				}
+			}
+		}
+		if (nextSlot != null) {
+			if (nextSlot.isReserved()) {
+				return nextSlot.getDateEnd();
+			} else {
+				return nextSlot.getDateStart();
+			}
+		}
+		return null;
 	}
 
 }

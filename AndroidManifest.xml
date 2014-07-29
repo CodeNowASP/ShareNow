@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-sdk
-        android:minSdkVersion="14"
+        android:minSdkVersion="16"
         android:targetSdkVersion="21" />
 
     <uses-feature
@@ -48,15 +48,16 @@
                 android:value="de.tum.asp.sharenow.app.MainActivity" />
         </activity>
         <activity
-            android:name="de.tum.asp.sharenow.app.MapViewActivity"
+            android:name=".app.MapViewActivity"
             android:label="@string/map_title"
             android:parentActivityName=".app.MainActivity" >
         </activity>
-<!-- 
+        <!--
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBcRhsK9GhC-qL3OunRQShWTCCvL3NesHs" /> -->
-                <meta-data
+            android:value="AIzaSyBcRhsK9GhC-qL3OunRQShWTCCvL3NesHs" />
+        -->
+        <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyADFchOlV_HTM0pVguh-IeZ079sKE8Mme8" />
     </application>

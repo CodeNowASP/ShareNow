@@ -16,7 +16,7 @@ import de.tum.asp.sharenow.app.MapViewActivity;
 public class GetPositionTask extends AsyncTask<Void, Void, Location> {
 
 	private ProgressDialog dialog;
-	MapViewActivity mapViewActivity;
+	private MapViewActivity mapViewActivity;
 
 	public GetPositionTask(MapViewActivity mapViewActivity) {
 		this.mapViewActivity = mapViewActivity;
@@ -25,7 +25,7 @@ public class GetPositionTask extends AsyncTask<Void, Void, Location> {
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		dialog = ProgressDialog.show(mapViewActivity, "Retrieving location",
+		dialog = ProgressDialog.show(mapViewActivity, "Retrieving Position",
 				"Please wait...", true, true);
 	}
 

@@ -69,7 +69,17 @@
 
     <!-- Map Activity -->
     <string name="map_title">Results</string>
-    <string name="map_nothing_found_popup_text">No results.</string>
+    <string name="map_nothing_found_popup_text">No Results.</string>
     <string name="map_nothing_found_popup_ok">OK</string>
+    <string name="map_in_use_title">Currently Not Available</string>
+    <string name="map_in_use_text">This spot is already occupied, sorry.</string>
+    <string name="map_infowindow_title">Available!</string>
+    <string name="book_dialog_image_descriptor">Spot picture</string>
+    <string name="book_dialog_button">Book!</string>
+    <string name="book_dialog_price">Price:</string>
+    <string name="book_dialog_confirmation_title">Thank You!</string>
+    <string name="book_dialog_confirmation_text_1">The address (</string>
+    <string name="book_dialog_confirmation_text_2">) has been copied to your clipboard.</string>
+    <string name="book_dialog_confirmation_ok">OK</string>
 
 </resources>

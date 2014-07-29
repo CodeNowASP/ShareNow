@@ -58,6 +58,7 @@ public class LocalDatabase {
 				place.getNumberOfBookings());
 		values.put(DatabaseContract.Places.COLUMN_NAME_RATING,
 				place.getRating());
+		values.put(DatabaseContract.Places.COLUMN_NAME_IMAGE, place.getImage());
 
 		// Datensatz einfügen & erzeugte _id in place schreiben
 		long id = db.insert(DatabaseContract.Places.TABLE_NAME, null, values);

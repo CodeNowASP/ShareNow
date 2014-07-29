@@ -2,7 +2,7 @@ package de.tum.asp.sharenow.app;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -12,14 +12,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.LatLngBounds.Builder;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.tasks.GetLocationTask;
 import de.tum.asp.sharenow.tasks.GetPositionTask;
-import de.tum.asp.sharenow.util.CustomMarker;
 import de.tum.asp.sharenow.util.DateConverter;
+import de.tum.asp.sharenow.util.InfoWindowClickListener;
 import de.tum.asp.sharenow.util.Place;
 import de.tum.asp.sharenow.util.Slot;
 import android.app.AlertDialog;
@@ -75,7 +76,7 @@ public class MapViewActivity extends FragmentActivity {
 			GetPositionTask gp = new GetPositionTask(this);
 			gp.execute();
 
-		} else {
+		} else if (getIntent().hasExtra(INTENT_EXTRA_ADDRESS)) {
 			// komplexe Suche ausgeführt
 			String dateStart = getIntent().getExtras().getString(
 					INTENT_EXTRA_START_DATE);
@@ -114,7 +115,7 @@ public class MapViewActivity extends FragmentActivity {
 	 *            Position, bei der die Parkplätze gesucht werden.
 	 */
 	public void findSpots(Location location) {
-		HashSet<CustomMarker> markers = new HashSet<CustomMarker>();
+		HashMap<Marker, Place> markers = new HashMap<Marker, Place>();
 		Builder boundsBuilder = new LatLngBounds.Builder();
 		// Postion auf Karte anzeigen
 		MarkerOptions mOpt = new MarkerOptions().position(
@@ -154,35 +155,39 @@ public class MapViewActivity extends FragmentActivity {
 				}
 				if ((distToPlace / 1000) <= distance && hasFreeSlot) {
 					// Parkplatz frei & innerhalb Distanz, anzeigen
-					CustomMarker marker = new CustomMarker();
+					MarkerOptions marker;
 					if (!slotReserved) {
-						marker.setMarker(new MarkerOptions()
+						marker = new MarkerOptions()
 								.position(new LatLng(lat, lon))
 								.title(place.getPricePerHour() + " €/h")
 								.snippet(place.getDescription())
 								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+										.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 					} else {
 						// Slot reserviert, andere Farbe
-						marker.setMarker(new MarkerOptions()
+						marker = new MarkerOptions()
 								.position(new LatLng(lat, lon))
-								.title(place.getPricePerHour() + " €/h")
-								.snippet(place.getDescription())
+								.title(getText(R.string.map_in_use_title)
+										.toString())
+								.snippet(
+										getText(R.string.map_in_use_text)
+												.toString())
 								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+										.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
 					}
-					marker.setPlace(place);
-					markers.add(marker);
-					boundsBuilder.include(marker.getMarkerOptions()
-							.getPosition());
-					map.addMarker(marker.getMarkerOptions());
+					Marker m = map.addMarker(marker);
+					markers.put(m, place);
+					boundsBuilder.include(marker.getPosition());
 				}
 			}
 		}
 		// Karte anpassen falls Parkplätze gefunden
-		if (markers.size() > 0) {
+		if (!markers.isEmpty()) {
 			map.moveCamera(CameraUpdateFactory.newLatLngBounds(
 					boundsBuilder.build(), 50));
+			// Listener für Klicks auf Marker Fenster
+			map.setOnInfoWindowClickListener(new InfoWindowClickListener(this,
+					markers, start, end));
 		} else {
 			map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location
 					.getLatitude(), location.getLongitude())));
