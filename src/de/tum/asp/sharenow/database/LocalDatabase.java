@@ -1,6 +1,7 @@
 package de.tum.asp.sharenow.database;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 
 import de.tum.asp.sharenow.util.Place;
 import de.tum.asp.sharenow.util.Slot;
@@ -294,6 +295,68 @@ public class LocalDatabase {
 	}
 
 	/**
+	 * Die Datensätze aller Parkplätze aus der Datenbank auslesen.
+	 * 
+	 * @return Die Datensätze aller Parkplätze. Null, falls keine Parkplätze
+	 *         existieren.
+	 */
+	public HashSet<Place> getPlaces() {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		HashSet<Place> places = new HashSet<Place>();
+
+		// festlegen welche Spalten zurückgegeben werden
+		String[] projection = { DatabaseContract.Places._ID,
+				DatabaseContract.Places.COLUMN_NAME_USER_ID,
+				DatabaseContract.Places.COLUMN_NAME_DESCRIPTION,
+				DatabaseContract.Places.COLUMN_NAME_ADDRESS,
+				DatabaseContract.Places.COLUMN_NAME_IMAGE,
+				DatabaseContract.Places.COLUMN_NAME_LOCATION_LAT,
+				DatabaseContract.Places.COLUMN_NAME_LOCATION_LONG,
+				DatabaseContract.Places.COLUMN_NAME_PRICE_PER_HOUR,
+				DatabaseContract.Places.COLUMN_NAME_NUMBER_OF_BOOKINGS,
+				DatabaseContract.Places.COLUMN_NAME_RATING };
+
+		// Parkplätze abfragen
+		Cursor cursor = db.query(DatabaseContract.Places.TABLE_NAME,
+				projection, null, new String[] {}, null, null, null);
+		cursor.moveToFirst();
+
+		while (!cursor.isAfterLast()) {
+			// Parkplatz gefunden, neues Place-Objekt erstellen & füllen
+			Place place = new Place();
+			place.setId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.ID)));
+			place.setUserId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_USER_ID)));
+			place.setDescription(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_DESCRIPTION)));
+			place.setAddress(cursor.getString(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_ADDRESS)));
+			place.setImage(cursor.getBlob(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_IMAGE)));
+			place.setLocationLat(cursor.getDouble(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_LOCATION_LAT)));
+			place.setLocationLong(cursor.getDouble(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_LOCATION_LONG)));
+			place.setPricePerHour(cursor.getDouble(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_PRICE_PER_HOUR)));
+			place.setNumberOfBookings(cursor.getInt(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_NUMBER_OF_BOOKINGS)));
+			place.setRating(cursor.getDouble(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Places.COLUMN_NAME_RATING)));
+			places.add(place);
+			cursor.moveToNext();
+		}
+
+		// Referenz auf Datenbank schließen
+		dbHelper.close();
+
+		// Plätze zurückgeben
+		return places;
+	}
+
+	/**
 	 * Den Datensatz eines Slots aus der Datenbank auslesen.
 	 * 
 	 * @param id
@@ -345,6 +408,66 @@ public class LocalDatabase {
 
 		// Slot-Objekt zurückgeben
 		return slot;
+	}
+
+	/**
+	 * Alle Slots eines Parkplatzes aus der Datenbank auslesen.
+	 * 
+	 * @param id
+	 *            Die ID des Parkplatzes.
+	 * @return Die Slots des Parkplatzes.
+	 */
+	@SuppressLint("SimpleDateFormat")
+	public HashSet<Slot> getSlots(long id) {
+		DatabaseHelper dbHelper = new DatabaseHelper(context);
+		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		HashSet<Slot> slots = new HashSet<Slot>();
+
+		// festlegen welche Spalten zurückgegeben werden
+		String[] projection = { DatabaseContract.Slots._ID,
+				DatabaseContract.Slots.COLUMN_NAME_PLACE_ID,
+				DatabaseContract.Slots.COLUMN_NAME_DATE_START,
+				DatabaseContract.Slots.COLUMN_NAME_DATE_END,
+				DatabaseContract.Slots.COLUMN_NAME_RESERVED,
+				DatabaseContract.Slots.COLUMN_NAME_WEEKLY };
+
+		// Slot abfragen
+		Cursor cursor = db.query(DatabaseContract.Slots.TABLE_NAME, projection,
+				DatabaseContract.Slots.COLUMN_NAME_PLACE_ID + "=?",
+				new String[] { Long.toString(id) }, null, null, null);
+		cursor.moveToFirst();
+
+		Slot slot = null;
+		while (!cursor.isAfterLast()) {
+			// Slot gefunden, neues Slot-Objekt erstellen & mit Daten füllen
+			slot = new Slot();
+			slot.setId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.ID)));
+			slot.setPlaceId(cursor.getLong(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_PLACE_ID)));
+			slot.setReserved(cursor.getInt(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_RESERVED)) == 1);
+			slot.setWeekly(cursor.getInt(cursor
+					.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_WEEKLY)) == 1);
+
+			// Start- und Enddatum von String in java.sql.Timestamp umwandeln
+			String dateStart = cursor
+					.getString(cursor
+							.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_DATE_START));
+			String dateEnd = cursor
+					.getString(cursor
+							.getColumnIndexOrThrow(DatabaseContract.Slots.COLUMN_NAME_DATE_END));
+			slot.setDateStart(Timestamp.valueOf(dateStart));
+			slot.setDateEnd(Timestamp.valueOf(dateEnd));
+			slots.add(slot);
+			cursor.moveToNext();
+		}
+
+		// Referenz auf Datenbank schließen
+		dbHelper.close();
+
+		// Slot-Objekte zurückgeben
+		return slots;
 	}
 
 	/**

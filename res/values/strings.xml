@@ -69,5 +69,7 @@
 
     <!-- Map Activity -->
     <string name="map_title">Results</string>
+    <string name="map_nothing_found_popup_text">No results.</string>
+    <string name="map_nothing_found_popup_ok">OK</string>
 
 </resources>

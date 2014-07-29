@@ -181,4 +181,19 @@ public class Slot {
 		return s;
 	}
 
+	/**
+	 * Überprüfen, ob der Slot mit einem Zeitabschnitt kollidiert.
+	 * 
+	 * @param start
+	 *            Start des Zeitabschnitts.
+	 * @param end
+	 *            Ende des Zeitabschnitts.
+	 * @return Wahr wenn sich der Slot und der Zeitabschnitt überschneiden.
+	 */
+	public boolean overlapsWith(Timestamp start, Timestamp end) {
+		boolean otherIsBefore = end.before(this.dateStart);
+		boolean otherIsAfter = start.after(this.dateEnd);
+		return !(otherIsBefore || otherIsAfter);
+	}
+
 }

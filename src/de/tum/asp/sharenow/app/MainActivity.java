@@ -1,12 +1,6 @@
 package de.tum.asp.sharenow.app;
 
 import java.io.ByteArrayOutputStream;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.dialogs.DatePickerFragment;

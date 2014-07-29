@@ -1,24 +1,32 @@
 package de.tum.asp.sharenow.app;
 
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.List;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.LatLngBounds.Builder;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import de.tum.asp.sharenow.R;
+import de.tum.asp.sharenow.database.LocalDatabase;
+import de.tum.asp.sharenow.tasks.GetLocationTask;
+import de.tum.asp.sharenow.tasks.GetPositionTask;
+import de.tum.asp.sharenow.util.CustomMarker;
 import de.tum.asp.sharenow.util.DateConverter;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.location.Criteria;
+import de.tum.asp.sharenow.util.Place;
+import de.tum.asp.sharenow.util.Slot;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -39,11 +47,12 @@ public class MapViewActivity extends FragmentActivity {
 	public static String INTENT_EXTRA_ADDRESS = "address";
 	public static String INTENT_EXTRA_DISTANCE = "distance";
 
-	private static double BASIC_DISTANCE_IN_KM = 1.0;
+	private static double BASIC_DISTANCE_IN_KM = 2.0;
 
+	private LocalDatabase db;
 	private GoogleMap map;
+
 	private double distance;
-	private Location location;
 	private Timestamp start, end;
 
 	@Override
@@ -63,7 +72,7 @@ public class MapViewActivity extends FragmentActivity {
 			end = new Timestamp(currentTime + hours * 3600 * 1000);
 
 			// aktuelle Position bestimmen
-			GetPosition gp = new GetPosition(this);
+			GetPositionTask gp = new GetPositionTask(this);
 			gp.execute();
 
 		} else {
@@ -77,15 +86,19 @@ public class MapViewActivity extends FragmentActivity {
 					INTENT_EXTRA_END_DATE);
 			String timeEnd = getIntent().getExtras().getString(
 					INTENT_EXTRA_END_TIME);
-			end = dateConverter.fromString(dateStart, timeStart);
+			end = dateConverter.fromString(dateEnd, timeEnd);
 			String address = getIntent().getExtras().getString(
 					INTENT_EXTRA_ADDRESS);
 			distance = getIntent().getExtras().getDouble(INTENT_EXTRA_DISTANCE);
+
+			// Adresse bestimmen
+			GetLocationTask gl = new GetLocationTask(this);
+			gl.execute(address);
 		}
 
-		// TODO: alle daten eingetragen, was damit machen
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		db = new LocalDatabase(this);
 	}
 
 	@Override
@@ -95,82 +108,93 @@ public class MapViewActivity extends FragmentActivity {
 	}
 
 	/**
-	 * Google Maps Karte auf eine bestimmte Position ausrichten.
+	 * Parkplätze suchen und auf Karte darstellen.
 	 * 
 	 * @param location
-	 *            Position, auf welche die Karte ausgerichtet werden soll.
+	 *            Position, bei der die Parkplätze gesucht werden.
 	 */
-	public void zoomToLocation(Location location) {
-		map.animateCamera(CameraUpdateFactory
-				.newCameraPosition(new CameraPosition.Builder().target(
-						new LatLng(location.getLatitude(), location
-								.getLongitude())).build()));
-
-		// TODO dummy marker ersetzen
-		map.addMarker(new MarkerOptions().position(new LatLng(48.1351253,
-				11.5819806)));
-		map.addMarker(new MarkerOptions()
-				.position(new LatLng(48.14726751, 11.5788907))
-				.title("My Spot")
-				.snippet("This is my spot!")
+	public void findSpots(Location location) {
+		HashSet<CustomMarker> markers = new HashSet<CustomMarker>();
+		Builder boundsBuilder = new LatLngBounds.Builder();
+		// Postion auf Karte anzeigen
+		MarkerOptions mOpt = new MarkerOptions().position(
+				new LatLng(location.getLatitude(), location.getLongitude()))
 				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-		map.addMarker(new MarkerOptions()
-				.position(new LatLng(48.13283399, 11.54473008))
-				.title("My Spot")
-				.snippet("This is my spot!")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-	}
-
-	// Klasse um asynchron auf eine GPS-Position zu warten
-	private class GetPosition extends AsyncTask<Void, Void, Location> {
-
-		private ProgressDialog dialog;
-		MapViewActivity mapViewActivity;
-
-		public GetPosition(MapViewActivity mapViewActivity) {
-			this.mapViewActivity = mapViewActivity;
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			dialog = ProgressDialog.show(mapViewActivity,
-					"Retrieving position", "Please wait...", true, true);
-		}
-
-		@Override
-		protected Location doInBackground(Void... params) {
-
-			// Location Services aktivieren
-			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			Intent intent = new Intent(mapViewActivity, MapViewActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(
-					mapViewActivity, 0, intent,
-					PendingIntent.FLAG_CANCEL_CURRENT);
-			String provider = locationManager.getBestProvider(new Criteria(),
-					true);
-			locationManager.requestLocationUpdates(provider, 0, 0,
-					pendingIntent);
-
-			// auf Signal warten
-			Location location = null;
-			while (location == null) {
-				location = locationManager.getLastKnownLocation(provider);
+						.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+		map.addMarker(mOpt);
+		boundsBuilder.include(mOpt.getPosition());
+		// alle Parkplätze durchgehen
+		Geocoder coder = new Geocoder(this);
+		for (Place place : db.getPlaces()) {
+			// Adresse in Koordinaten umwandeln
+			List<Address> addresses = null;
+			try {
+				addresses = coder.getFromLocationName(place.getAddress(), 1);
+			} catch (IOException e) {
 			}
-			return location;
-
-		}
-
-		@Override
-		protected void onPostExecute(Location result) {
-			super.onPostExecute(result);
-			if (result != null) {
-				mapViewActivity.zoomToLocation(result);
+			if (addresses != null) {
+				// Überprüfen ob Parkplatz innerhalb Distanz & frei
+				Location placeLocation = new Location("");
+				double lat = addresses.get(0).getLatitude();
+				double lon = addresses.get(0).getLongitude();
+				placeLocation.setLatitude(lat);
+				placeLocation.setLongitude(lon);
+				double distToPlace = placeLocation.distanceTo(location);
+				boolean hasFreeSlot = false;
+				boolean slotReserved = false;
+				for (Slot slot : db.getSlots(place.getId())) {
+					boolean currentSlotHasFreeSlot = slot.getDateStart()
+							.before(start);
+					currentSlotHasFreeSlot = currentSlotHasFreeSlot
+							&& slot.getDateEnd().after(end);
+					hasFreeSlot = currentSlotHasFreeSlot || hasFreeSlot;
+					if (slot.isReserved()) {
+						slotReserved = slot.overlapsWith(start, end);
+					}
+				}
+				if ((distToPlace / 1000) <= distance && hasFreeSlot) {
+					// Parkplatz frei & innerhalb Distanz, anzeigen
+					CustomMarker marker = new CustomMarker();
+					if (!slotReserved) {
+						marker.setMarker(new MarkerOptions()
+								.position(new LatLng(lat, lon))
+								.title(place.getPricePerHour() + " €/h")
+								.snippet(place.getDescription())
+								.icon(BitmapDescriptorFactory
+										.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+					} else {
+						// Slot reserviert, andere Farbe
+						marker.setMarker(new MarkerOptions()
+								.position(new LatLng(lat, lon))
+								.title(place.getPricePerHour() + " €/h")
+								.snippet(place.getDescription())
+								.icon(BitmapDescriptorFactory
+										.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+					}
+					marker.setPlace(place);
+					markers.add(marker);
+					boundsBuilder.include(marker.getMarkerOptions()
+							.getPosition());
+					map.addMarker(marker.getMarkerOptions());
+				}
 			}
-			dialog.dismiss();
+		}
+		// Karte anpassen falls Parkplätze gefunden
+		if (markers.size() > 0) {
+			map.moveCamera(CameraUpdateFactory.newLatLngBounds(
+					boundsBuilder.build(), 50));
+		} else {
+			map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location
+					.getLatitude(), location.getLongitude())));
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.map_nothing_found_popup_text);
+			builder.setPositiveButton(R.string.map_nothing_found_popup_ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+						}
+					});
+			AlertDialog dialog = builder.create();
+			dialog.show();
 		}
 	}
-
 }

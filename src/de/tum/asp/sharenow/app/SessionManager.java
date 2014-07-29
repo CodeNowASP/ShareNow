@@ -21,7 +21,7 @@ public class SessionManager {
 
 	private SharedPreferences pref;
 	private Context context;
-	
+
 	/**
 	 * Konstruktor.
 	 * 
@@ -90,6 +90,14 @@ public class SessionManager {
 	 * @return Wahr, wenn ein Nutzer eingeloggt ist.
 	 */
 	public boolean loggedIn() {
+		// wenn eingeloggt, überprüfen ob nutzer noch existiert
+		if (pref.getBoolean(KEY_LOGGED_IN, false)) {
+			LocalDatabase db = new LocalDatabase(context);
+			User user = db.getUser(pref.getLong(KEY_ID, -1));
+			if (user == null) {
+				logout();
+			}
+		}
 		return pref.getBoolean(KEY_LOGGED_IN, false);
 	}
 
