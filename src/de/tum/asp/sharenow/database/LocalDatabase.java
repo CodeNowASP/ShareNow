@@ -703,6 +703,9 @@ public class LocalDatabase {
 		db.delete(DatabaseContract.Places.TABLE_NAME,
 				DatabaseContract.Places.ID + "=?",
 				new String[] { Long.toString(id) });
+		db.delete(DatabaseContract.Slots.TABLE_NAME,
+				DatabaseContract.Slots.COLUMN_NAME_PLACE_ID + "=?",
+				new String[] { Long.toString(id) });
 	}
 
 	/**

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Mit dieser Aktivität kann sich ein Nutzer registrieren.
@@ -63,6 +64,7 @@ public class RegisterActivity extends ActionBarActivity {
 
 			// nach erfolgreicher Registrierung zurück zu Haupt-Aktivität
 			// wechseln
+			Toast.makeText(this, "Account created.", Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(this, MainActivity.class);
 			startActivity(intent);
 		} else {

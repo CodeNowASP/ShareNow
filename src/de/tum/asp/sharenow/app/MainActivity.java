@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Hauptseite. Alle anderen Seiten werden durch diese als Fragmente aufgerufen.
@@ -305,6 +306,8 @@ public class MainActivity extends ActionBarActivity implements
 			RadioButton weekly = (RadioButton) findViewById(R.id.rentout_slot_regularly_button);
 			slot.setWeekly(weekly.isChecked());
 			db.insert(slot);
+			Toast.makeText(this, "Parking spot created.", Toast.LENGTH_SHORT)
+					.show();
 			mViewPager.setCurrentItem(3);
 		} else {
 			// Nutzer nicht eingeloggt, Fehlermeldung ausgeben

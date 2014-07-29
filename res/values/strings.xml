@@ -40,7 +40,7 @@
     <string name="rentout_text">Please enter the details of your parking spot.</string>
     <string name="rentout_address">Address</string>
     <string name="rentout_description">Description</string>
-    <string name="rentout_price">Price Per Hour In Euro</string>
+    <string name="rentout_price">Price per hour in Euro</string>
     <string name="rentout_slot_title">Availability</string>
     <string name="rentout_slot_begin">From</string>
     <string name="rentout_slot_end">Until</string>
@@ -58,7 +58,7 @@
 
     <!-- Search Fragment -->
     <string name="search_quick_title">Quick Search</string>
-    <string name="search_quick_description">Find a place near you for the specified number of hours.</string>
+    <string name="search_quick_description">Find a parking place near you for the specified number of hours.</string>
     <string name="search_quick_button">Quick Search</string>
     <string name="search_advanced_title">Advanced Search</string>
     <string name="search_advanced_slot_begin">From</string>
@@ -66,7 +66,7 @@
     <string name="search_advanced_slot_time">Time</string>
     <string name="search_advanced_slot_date">Date</string>
     <string name="search_advanced_address">Address</string>
-    <string name="search_advanced_distance">Maximum Distance In Kilometers</string>
+    <string name="search_advanced_distance">Maximum distance in kilometres</string>
     <string name="search_advanced_button">Advanced Search</string>
     <string name="search_popup_text">Location not found.</string>
     <string name="search_popup_ok">OK</string>

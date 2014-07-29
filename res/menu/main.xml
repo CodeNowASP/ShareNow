@@ -10,10 +10,6 @@
         app:showAsAction="always">
         <menu>
             <item
-                android:id="@+id/actionbar_menu_profile"
-                android:title="@string/actionbar_menu_profile">
-            </item>
-            <item
                 android:id="@+id/actionbar_menu_logout"
                 android:title="@string/actionbar_menu_logout">
             </item>
