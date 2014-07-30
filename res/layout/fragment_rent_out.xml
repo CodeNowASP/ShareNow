@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingTop="97dp" >
+    android:paddingTop="107dp" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -133,8 +133,8 @@
                 android:id="@+id/rentout_slot_once_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/rentout_slot_once"
-                android:checked="true" />
+                android:checked="true"
+                android:text="@string/rentout_slot_once" />
 
             <RadioButton
                 android:id="@+id/rentout_slot_regularly_button"
@@ -186,8 +186,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/rentout_price_text"
-            android:inputType="number"
-            android:text="1,5" />
+            android:inputType="numberDecimal"
+            android:text="1.5" />
 
         <Button
             android:id="@+id/rentout_button"

@@ -1,9 +1,8 @@
 package de.tum.asp.sharenow.app;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,6 +17,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.tasks.GetLocationTask;
+import de.tum.asp.sharenow.tasks.GetLocationsTask;
 import de.tum.asp.sharenow.tasks.GetPositionTask;
 import de.tum.asp.sharenow.util.DateConverter;
 import de.tum.asp.sharenow.util.InfoWindowClickListener;
@@ -25,13 +25,9 @@ import de.tum.asp.sharenow.util.Place;
 import de.tum.asp.sharenow.util.Slot;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.Menu;
 
 /**
  * Diese Seite enthält eine Google Maps Karte, auf der gefunden Parkplätze
@@ -103,12 +99,6 @@ public class MapViewActivity extends FragmentActivity {
 		db = new LocalDatabase(this);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.map, menu);
-		return true;
-	}
-
 	/**
 	 * Parkplätze suchen und auf Karte darstellen.
 	 * 
@@ -116,83 +106,79 @@ public class MapViewActivity extends FragmentActivity {
 	 *            Position, bei der die Parkplätze gesucht werden.
 	 */
 	public void findSpots(Location location) {
-		Log.d("OLO", "angekommen!");
 		HashMap<Marker, Place> markers = new HashMap<Marker, Place>();
 		Builder boundsBuilder = new LatLngBounds.Builder();
 		// Postion auf Karte anzeigen
+		// MarkerOptions mOpt = new MarkerOptions().position(
+		// new LatLng(location.getLatitude(), location.getLongitude()))
+		// .icon(BitmapDescriptorFactory
+		// .defaultMarker(BitmapDescriptorFactory.HUE_RED));
 		MarkerOptions mOpt = new MarkerOptions().position(
 				new LatLng(location.getLatitude(), location.getLongitude()))
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
 		map.addMarker(mOpt);
 		boundsBuilder.include(mOpt.getPosition());
 		// alle Parkplätze durchgehen
-		Geocoder coder = new Geocoder(this);
 		for (Place place : db.getPlaces(-1)) {
-			// Adresse in Koordinaten umwandeln
-			List<Address> addresses = null;
+			// Überprüfen ob Parkplatz innerhalb Distanz & frei
+			GetLocationsTask glt = new GetLocationsTask();
+			glt.execute(place.getAddress());
+			Location placeLocation = null;
 			try {
-				addresses = coder.getFromLocationName(place.getAddress(), 1);
-			} catch (IOException e) {
+				placeLocation = glt.get();
+			} catch (InterruptedException | ExecutionException e) {
 			}
-			if (addresses != null) {
-				// Überprüfen ob Parkplatz innerhalb Distanz & frei
-				Location placeLocation = new Location("");
-				double lat = addresses.get(0).getLatitude();
-				double lon = addresses.get(0).getLongitude();
-				placeLocation.setLatitude(lat);
-				placeLocation.setLongitude(lon);
-				double distToPlace = placeLocation.distanceTo(location);
-				boolean hasFreeSlot = false;
-				boolean slotReserved = false;
-				Slot reservedSlot = null;
-				for (Slot slot : db.getSlots(place.getId())) {
-					boolean currentSlotHasFreeSlot = slot.getDateStart()
-							.before(start);
-					currentSlotHasFreeSlot = currentSlotHasFreeSlot
-							&& slot.getDateEnd().after(end);
-					hasFreeSlot = currentSlotHasFreeSlot || hasFreeSlot;
-					if (slot.isReserved()) {
-						slotReserved = slot.overlapsWith(start, end);
-						reservedSlot = slot;
-					}
+			double distToPlace = placeLocation.distanceTo(location);
+			boolean hasFreeSlot = false;
+			boolean slotReserved = false;
+			Slot reservedSlot = null;
+			for (Slot slot : db.getSlots(place.getId())) {
+				boolean currentSlotHasFreeSlot = slot.getDateStart().before(
+						start);
+				currentSlotHasFreeSlot = currentSlotHasFreeSlot
+						&& slot.getDateEnd().after(end);
+				hasFreeSlot = currentSlotHasFreeSlot || hasFreeSlot;
+				if (slot.isReserved()) {
+					slotReserved = slot.overlapsWith(start, end);
+					reservedSlot = slot;
 				}
-				if ((distToPlace / 1000) <= distance && hasFreeSlot) {
-					// Parkplatz frei & innerhalb Distanz, anzeigen
-					MarkerOptions marker;
-					if (!slotReserved) {
-						marker = new MarkerOptions()
-								.position(new LatLng(lat, lon))
-								.title(place.getPricePerHour() + " €/h")
-								.snippet(place.getDescription())
-								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+			}
+			if ((distToPlace / 1000) <= distance && hasFreeSlot) {
+				// Parkplatz frei & innerhalb Distanz, anzeigen
+				MarkerOptions marker;
+				if (!slotReserved) {
+					marker = new MarkerOptions()
+							.position(
+									new LatLng(placeLocation.getLatitude(),
+											placeLocation.getLongitude()))
+							.title(place.getPricePerHour() + " €/h")
+							.snippet(place.getDescription())
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+				} else {
+					// Slot reserviert, andere Farbe + anderer Text
+					String text;
+					if (reservedSlot != null) {
+						DateConverter dc = new DateConverter();
+						text = getText(R.string.map_in_use_text_1).toString();
+						text += " " + dc.toString(reservedSlot.getDateEnd())
+								+ ".";
 					} else {
-						// Slot reserviert, andere Farbe + anderer Text
-						String text;
-						if (reservedSlot != null) {
-							DateConverter dc = new DateConverter();
-							text = getText(R.string.map_in_use_text_1)
-									.toString();
-							text += " "
-									+ dc.toString(reservedSlot.getDateEnd())
-									+ ".";
-						} else {
-							text = getText(R.string.map_in_use_text_2)
-									.toString();
-						}
-						marker = new MarkerOptions()
-								.position(new LatLng(lat, lon))
-								.title(getText(R.string.map_in_use_title)
-										.toString())
-								.snippet(text)
-								.icon(BitmapDescriptorFactory
-										.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+						text = getText(R.string.map_in_use_text_2).toString();
 					}
-					Marker m = map.addMarker(marker);
-					markers.put(m, place);
-					boundsBuilder.include(marker.getPosition());
+					marker = new MarkerOptions()
+							.position(
+									new LatLng(placeLocation.getLatitude(),
+											placeLocation.getLongitude()))
+							.title(getText(R.string.map_in_use_title)
+									.toString())
+							.snippet(text)
+							.icon(BitmapDescriptorFactory
+									.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
 				}
+				Marker m = map.addMarker(marker);
+				markers.put(m, place);
+				boundsBuilder.include(marker.getPosition());
 			}
 		}
 		// Karte anpassen falls Parkplätze gefunden

@@ -1,15 +1,10 @@
 package de.tum.asp.sharenow.tasks;
 
-import java.io.IOException;
-import java.util.List;
-
 import android.app.ProgressDialog;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.util.Log;
 import de.tum.asp.sharenow.app.MapViewActivity;
+import de.tum.asp.sharenow.util.Geocoder;
 
 /**
  * Klasse um asynchron auf die Koordinaten einer Adresse zu warten.
@@ -32,30 +27,8 @@ public class GetLocationTask extends AsyncTask<String, Void, Location> {
 
 	@Override
 	protected Location doInBackground(String... params) {
-
-		// Koordinaten aus Adresse holen
-		Geocoder coder = new Geocoder(mapViewActivity);
-		List<Address> addresses = null;
-		Location placeLocation = null;
-		try {
-			for (int i = 0; i < 5; i++) {
-				addresses = coder.getFromLocationName(params[0], 1);
-				if (addresses != null) {
-					break;
-				}
-			}
-
-		} catch (IOException e) {
-			Log.d("OLO", e.toString());
-		}
-		if (addresses != null) {
-			placeLocation = new Location("");
-			double lat = addresses.get(0).getLatitude();
-			double lon = addresses.get(0).getLongitude();
-			placeLocation.setLatitude(lat);
-			placeLocation.setLongitude(lon);
-		}
-		return placeLocation;
+		Geocoder geocoder = new Geocoder();
+		return geocoder.getLocationInfo(params[0]);
 	}
 
 	@Override
@@ -66,4 +39,5 @@ public class GetLocationTask extends AsyncTask<String, Void, Location> {
 			mapViewActivity.findSpots(result);
 		}
 	}
+
 }
