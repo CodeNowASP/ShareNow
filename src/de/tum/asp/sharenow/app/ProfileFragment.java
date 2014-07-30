@@ -43,6 +43,5 @@ public class ProfileFragment extends Fragment {
 		tv.setText(text);
 		tv = (TextView) getView().findViewById(R.id.profile_view_subtitle);
 		tv.setText(user.getMail());
-		onResume();
 	}
 }

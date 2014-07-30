@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 
 import android.content.Context;
+import android.location.Location;
 import de.tum.asp.sharenow.database.LocalDatabase;
 
 /**
@@ -305,6 +306,16 @@ public class Place {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return Die Location des Parkplatzes.
+	 */
+	public Location getLocation() {
+		Location loc = new Location("");
+		loc.setLatitude(locationLat);
+		loc.setLongitude(locationLong);
+		return loc;
 	}
 
 }

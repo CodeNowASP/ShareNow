@@ -1,8 +1,8 @@
 package de.tum.asp.sharenow.app;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -17,7 +17,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import de.tum.asp.sharenow.R;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.tasks.GetLocationTask;
-import de.tum.asp.sharenow.tasks.GetLocationsTask;
 import de.tum.asp.sharenow.tasks.GetPositionTask;
 import de.tum.asp.sharenow.util.DateConverter;
 import de.tum.asp.sharenow.util.InfoWindowClickListener;
@@ -117,13 +116,7 @@ public class MapViewActivity extends FragmentActivity {
 		// alle Parkplätze durchgehen
 		for (Place place : db.getPlaces(-1)) {
 			// Überprüfen ob Parkplatz innerhalb Distanz & frei
-			GetLocationsTask glt = new GetLocationsTask(this);
-			glt.execute(place.getAddress());
-			Location placeLocation = null;
-			try {
-				placeLocation = glt.get();
-			} catch (InterruptedException | ExecutionException e) {
-			}
+			Location placeLocation = place.getLocation();
 			double distToPlace = placeLocation.distanceTo(location);
 			boolean hasFreeSlot = false;
 			boolean slotReserved = false;
@@ -142,12 +135,13 @@ public class MapViewActivity extends FragmentActivity {
 			if ((distToPlace / 1000) <= distance && hasFreeSlot) {
 				// Parkplatz frei & innerhalb Distanz, anzeigen
 				MarkerOptions marker;
+				DecimalFormat df = new DecimalFormat("#0.00");
 				if (!slotReserved) {
 					marker = new MarkerOptions()
 							.position(
 									new LatLng(placeLocation.getLatitude(),
 											placeLocation.getLongitude()))
-							.title(place.getPricePerHour() + " €/h")
+							.title(df.format(place.getPricePerHour()) + " €/h")
 							.snippet(place.getDescription())
 							.icon(BitmapDescriptorFactory
 									.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));

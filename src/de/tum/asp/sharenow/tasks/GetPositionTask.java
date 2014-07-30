@@ -9,6 +9,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import de.tum.asp.sharenow.app.MapViewActivity;
+import de.tum.asp.sharenow.database.LocalDatabase;
+import de.tum.asp.sharenow.util.Geocoder;
+import de.tum.asp.sharenow.util.Place;
 
 /**
  * Klasse um asynchron auf eine GPS-Position zu warten
@@ -40,6 +43,18 @@ public class GetPositionTask extends AsyncTask<Void, Void, Location> {
 				mapViewActivity, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		String provider = locationManager.getBestProvider(new Criteria(), true);
 		locationManager.requestLocationUpdates(provider, 0, 0, pendingIntent);
+
+		// Plätze updaten
+		Geocoder geocoder = new Geocoder();
+		LocalDatabase db = new LocalDatabase(mapViewActivity);
+		for (Place place : db.getPlaces(-1)) {
+			if (place.getLocationLat() == 0 || place.getLocationLong() == 0) {
+				Location l = geocoder.getLocationInfo(place.getAddress());
+				place.setLocationLat(l.getLatitude());
+				place.setLocationLong(l.getLongitude());
+				db.update(place);
+			}
+		}
 
 		// auf Signal warten
 		Location location = null;

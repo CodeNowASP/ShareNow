@@ -151,7 +151,7 @@ public class LocalDatabase {
 		values.put(DatabaseContract.Places.COLUMN_NAME_DESCRIPTION,
 				place.getDescription());
 		values.put(DatabaseContract.Places.COLUMN_NAME_ADDRESS,
-				place.getDescription());
+				place.getAddress());
 		values.put(DatabaseContract.Places.COLUMN_NAME_LOCATION_LAT,
 				place.getLocationLat());
 		values.put(DatabaseContract.Places.COLUMN_NAME_LOCATION_LONG,
