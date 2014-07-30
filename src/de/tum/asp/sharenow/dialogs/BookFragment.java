@@ -49,10 +49,10 @@ public class BookFragment extends DialogFragment {
 		// Texte
 		View description = v.findViewById(R.id.book_dialog_description);
 		((TextView) description).setText("\"" + place.getDescription() + "\"");
-		View price = v.findViewById(R.id.book_dialog_price_value);
+		View price = v.findViewById(R.id.book_dialog_price);
 		DecimalFormat df = new DecimalFormat("#0.00");
-		((TextView) price)
-				.setText(df.format(place.getPricePerHour()) + " €/hr");
+		((TextView) price).setText(df.format(place.getPricePerHour())
+				+ " € per hour");
 		getDialog().setTitle(R.string.map_infowindow_title);
 
 		// Button
