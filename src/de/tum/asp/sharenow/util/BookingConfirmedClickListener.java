@@ -1,6 +1,5 @@
 package de.tum.asp.sharenow.util;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -21,7 +20,6 @@ public class BookingConfirmedClickListener implements
 				.getSystemService(Context.CLIPBOARD_SERVICE);
 		ClipData clip = ClipData.newPlainText("address", address);
 		clipboard.setPrimaryClip(clip);
-		((Activity) context).finish();
 	}
 
 	/**

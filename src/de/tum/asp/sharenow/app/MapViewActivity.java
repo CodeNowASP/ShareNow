@@ -109,10 +109,6 @@ public class MapViewActivity extends FragmentActivity {
 		HashMap<Marker, Place> markers = new HashMap<Marker, Place>();
 		Builder boundsBuilder = new LatLngBounds.Builder();
 		// Postion auf Karte anzeigen
-		// MarkerOptions mOpt = new MarkerOptions().position(
-		// new LatLng(location.getLatitude(), location.getLongitude()))
-		// .icon(BitmapDescriptorFactory
-		// .defaultMarker(BitmapDescriptorFactory.HUE_RED));
 		MarkerOptions mOpt = new MarkerOptions().position(
 				new LatLng(location.getLatitude(), location.getLongitude()))
 				.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
@@ -121,7 +117,7 @@ public class MapViewActivity extends FragmentActivity {
 		// alle Parkplätze durchgehen
 		for (Place place : db.getPlaces(-1)) {
 			// Überprüfen ob Parkplatz innerhalb Distanz & frei
-			GetLocationsTask glt = new GetLocationsTask();
+			GetLocationsTask glt = new GetLocationsTask(this);
 			glt.execute(place.getAddress());
 			Location placeLocation = null;
 			try {

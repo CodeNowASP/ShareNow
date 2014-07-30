@@ -49,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_quick_button"
+            android:paddingTop="20dp"
             android:text="@string/search_advanced_title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -125,6 +126,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_advanced_slot_end"
+            android:paddingTop="15dp"
             android:text="@string/search_advanced_address" />
 
         <EditText
@@ -140,6 +142,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/search_advanced_address_input"
+            android:paddingTop="15dp"
             android:text="@string/search_advanced_distance" />
 
         <EditText

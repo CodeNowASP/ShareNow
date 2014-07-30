@@ -291,7 +291,7 @@ public class MainActivity extends ActionBarActivity implements
 			// Slot erstellen
 			Slot slot = new Slot();
 			slot.setPlaceId(place.getId());
-			slot.setPlaceId(place.getUserId());
+			slot.setUserId(place.getUserId());
 			slot.setReserved(false);
 
 			// Datum & Uhrzeit aus Strings auslesen

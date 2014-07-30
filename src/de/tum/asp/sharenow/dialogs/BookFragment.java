@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
 import de.tum.asp.sharenow.R;
+import de.tum.asp.sharenow.app.SessionManager;
 import de.tum.asp.sharenow.database.LocalDatabase;
 import de.tum.asp.sharenow.util.BookingConfirmedClickListener;
 import de.tum.asp.sharenow.util.Place;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BookFragment extends DialogFragment {
 
@@ -57,23 +59,29 @@ public class BookFragment extends DialogFragment {
 		Button button = (Button) v.findViewById(R.id.book_dialog_button);
 		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				Slot slot = new Slot(place.getId(), place.getUserId(), start,
-						end, true, false);
-				LocalDatabase db = new LocalDatabase(getActivity());
-				db.insert(slot);
-				BookFragment.this.dismiss();
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						getActivity());
-				builder.setTitle(R.string.book_dialog_confirmation_title);
-				builder.setMessage(getText(R.string.book_dialog_confirmation_text_1)
-						+ place.getAddress()
-						+ getText(R.string.book_dialog_confirmation_text_2));
-				builder.setPositiveButton(
-						R.string.book_dialog_confirmation_ok,
-						new BookingConfirmedClickListener(getActivity(), place
-								.getAddress()));
-				AlertDialog dialog = builder.create();
-				dialog.show();
+				SessionManager sm = new SessionManager(getActivity());
+				if (!sm.loggedIn()) {
+					Toast.makeText(getActivity(), "Not logged in.",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Slot slot = new Slot(place.getId(), sm.getId(), start, end,
+							true, false);
+					LocalDatabase db = new LocalDatabase(getActivity());
+					db.insert(slot);
+					BookFragment.this.dismiss();
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							getActivity());
+					builder.setTitle(R.string.book_dialog_confirmation_title);
+					builder.setMessage(getText(R.string.book_dialog_confirmation_text_1)
+							+ place.getAddress()
+							+ getText(R.string.book_dialog_confirmation_text_2));
+					builder.setPositiveButton(
+							R.string.book_dialog_confirmation_ok,
+							new BookingConfirmedClickListener(getActivity(),
+									place.getAddress()));
+					AlertDialog dialog = builder.create();
+					dialog.show();
+				}
 			}
 		});
 
