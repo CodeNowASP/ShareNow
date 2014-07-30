@@ -269,6 +269,11 @@ public class MainActivity extends ActionBarActivity implements
 			Place place = new Place();
 			place.setUserId(sm.getId());
 			EditText address = (EditText) findViewById(R.id.rentout_address_input);
+			if (address.getText().length() == 0) {
+				Toast.makeText(this, "Please enter an address.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
 			place.setAddress(address.getText().toString());
 			EditText description = (EditText) findViewById(R.id.rentout_description_input);
 			place.setDescription(description.getText().toString());
@@ -284,6 +289,11 @@ public class MainActivity extends ActionBarActivity implements
 			place.setImage(byteArray);
 
 			EditText price = (EditText) findViewById(R.id.rentout_price_input);
+			if (price.getText().length() == 0) {
+				Toast.makeText(this, "Please enter a price.",
+						Toast.LENGTH_SHORT).show();
+				return;
+			}
 			String pricePerHour = price.getText().toString().replace(",", ".");
 			place.setPricePerHour(Double.parseDouble(pricePerHour));
 			db.insert(place);
@@ -332,7 +342,11 @@ public class MainActivity extends ActionBarActivity implements
 	public void searchQuick(View view) {
 		Intent intent = new Intent(this, MapViewActivity.class);
 		EditText hourInput = (EditText) findViewById(R.id.search_quick_minutes_input);
-
+		if (hourInput.getText().length() == 0) {
+			Toast.makeText(this, "Please enter the desired number of hours.",
+					Toast.LENGTH_SHORT).show();
+			return;
+		}
 		// gewünschte Anzahl Stunden an Intent anhängen
 		int hours = Integer.parseInt(hourInput.getText().toString());
 		intent.putExtra(MapViewActivity.INTENT_EXTRA_HOURS, hours);
@@ -365,7 +379,17 @@ public class MainActivity extends ActionBarActivity implements
 		EditText address = (EditText) findViewById(R.id.search_advanced_address_input);
 		intent.putExtra(MapViewActivity.INTENT_EXTRA_ADDRESS, address.getText()
 				.toString());
+		if (address.getText().length() == 0) {
+			Toast.makeText(this, "Please enter an address.", Toast.LENGTH_SHORT)
+					.show();
+			return;
+		}
 		EditText distance = (EditText) findViewById(R.id.search_advanced_distance_input);
+		if (distance.getText().length() == 0) {
+			Toast.makeText(this, "Please enter the maximum distance.",
+					Toast.LENGTH_SHORT).show();
+			return;
+		}
 		intent.putExtra(MapViewActivity.INTENT_EXTRA_DISTANCE,
 				Double.parseDouble(distance.getText().toString()));
 
