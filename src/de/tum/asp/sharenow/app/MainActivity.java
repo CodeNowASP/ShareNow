@@ -348,7 +348,7 @@ public class MainActivity extends ActionBarActivity implements
 			return;
 		}
 		// gewünschte Anzahl Stunden an Intent anhängen
-		int hours = Integer.parseInt(hourInput.getText().toString());
+		double hours = Double.parseDouble(hourInput.getText().toString());
 		intent.putExtra(MapViewActivity.INTENT_EXTRA_HOURS, hours);
 
 		startActivity(intent);

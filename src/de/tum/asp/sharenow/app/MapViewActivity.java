@@ -62,11 +62,12 @@ public class MapViewActivity extends FragmentActivity {
 
 		if (getIntent().hasExtra(INTENT_EXTRA_HOURS)) {
 			// schnelle Suche ausgeführt
-			int hours = getIntent().getExtras().getInt(INTENT_EXTRA_HOURS);
+			double hours = getIntent().getExtras()
+					.getDouble(INTENT_EXTRA_HOURS);
 			distance = BASIC_DISTANCE_IN_KM;
 			long currentTime = System.currentTimeMillis();
 			start = new Timestamp(currentTime);
-			end = new Timestamp(currentTime + hours * 3600 * 1000);
+			end = new Timestamp((long) (currentTime + hours * 3600 * 1000));
 
 			// aktuelle Position bestimmen
 			GetPositionTask gp = new GetPositionTask(this);
